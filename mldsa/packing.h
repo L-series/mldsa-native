@@ -118,6 +118,6 @@ __contract__(
     array_bound(z->vec[k0].coeffs, 0, MLDSA_N, -(MLDSA_GAMMA1 - 1), MLDSA_GAMMA1 + 1)))
   ensures(forall(k1, 0, MLDSA_K,
     array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
-  ensures(returnvalue >= 0 && return_value <= 1)
+  ensures(return_value >= 0 && return_value <= 1)
 );
 #endif

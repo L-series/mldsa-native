@@ -226,8 +226,9 @@ void pack_sig(uint8_t sig[CRYPTO_BYTES], const uint8_t c[MLDSA_CTILDEBYTES],
 int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
                const uint8_t sig[CRYPTO_BYTES])
 {
-  unsigned int i, j, k;
-
+  unsigned int i, j;
+  unsigned int old_hint_count;
+  
   memcpy(c, sig, MLDSA_CTILDEBYTES);
   sig += MLDSA_CTILDEBYTES;
 
@@ -235,30 +236,66 @@ int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
   sig += MLDSA_L * MLDSA_POLYZ_PACKEDBYTES;
 
   /* Decode h */
-  k = 0;
+  old_hint_count = 0;
   for (i = 0; i < MLDSA_K; ++i)
+  __loop__(
+    invariant(i <= MLDSA_K)
+  )
   {
-    for (j = 0; j < MLDSA_N; ++j)
-      h->vec[i].coeffs[j] = 0;
+    const unsigned int new_hint_count = sig[MLDSA_OMEGA + i];
 
-    if (sig[MLDSA_OMEGA + i] < k || sig[MLDSA_OMEGA + i] > MLDSA_OMEGA)
-      return 1;
+    /* Set all coefficients of entire polynomial to 0.  */
+    /* Only those that are actually non-zero hints will */
+    /* be overwritten below.                            */
+    poly_clear(&h->vec[i]);
 
-    for (j = k; j < sig[MLDSA_OMEGA + i]; ++j)
+//    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
+//    {
+//      return 1;
+//    }
+
+    /* new_hint_count must increase or stay the same, but also remain */
+    /* less than or equal to MLDSA_OMEGA                              */
+    if (new_hint_count >= old_hint_count && new_hint_count <= MLDSA_OMEGA)
     {
-      /* Coefficients are ordered for strong unforgeability */
-      if (j > k && sig[j] <= sig[j - 1])
-        return 1;
-      h->vec[i].coeffs[sig[j]] = 1;
-    }
+      /* If new_hint_count == old_hint_count, then this polynomial has */
+      /* zero hints, so this loop executes zero times and we move      */
+      /* straight on to the next polynomial.                           */
+      for (j = old_hint_count; j < new_hint_count; ++j)
+      __loop__(
+        invariant(i <= MLDSA_K)
+        invariant(j >= old_hint_count)
+        invariant(j <= new_hint_count)
+        invariant(new_hint_count >= old_hint_count)
+        invariant(new_hint_count <= MLDSA_OMEGA)
+      )
+      {
+        /* Coefficients must be ordered for strong unforgeability */
+        if (j > old_hint_count && sig[j] <= sig[j - 1])
+        {
+          return 1;
+        }
+        h->vec[i].coeffs[sig[j]] = 1;
+      }
 
-    k = sig[MLDSA_OMEGA + i];
+      old_hint_count = new_hint_count;
+    } else {
+      /* Error - new_hint_count is invalid */
+      return 1;
+    }
   }
 
-  /* Extra indices are zero for strong unforgeability */
-  for (j = k; j < MLDSA_OMEGA; ++j)
-    if (sig[j])
+  /* Extra indices must be zero for strong unforgeability */
+  for (j = old_hint_count; j < MLDSA_OMEGA; ++j)
+  __loop__(
+    invariant(j <= MLDSA_OMEGA)
+  )
+  {
+    if (sig[j] != 0)
+    {
       return 1;
+    }
+  }
 
   return 0;
 }
