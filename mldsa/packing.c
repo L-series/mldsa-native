@@ -165,6 +165,12 @@ int unpack_hints(polyveck *h,
   cassert(forall(k1, 0, MLDSA_K,
                  forall(k2, 0, MLDSA_N, h->vec[k1].coeffs[k2] == 0)));
 
+  memcpy(c, sig, MLDSA_CTILDEBYTES);
+  sig += MLDSA_CTILDEBYTES;
+
+  polyvecl_unpack_z(z, sig);
+  sig += MLDSA_L * MLDSA_POLYZ_PACKEDBYTES;
+
   old_hint_count = 0;
   for (i = 0; i < MLDSA_K; ++i)
   __loop__(
