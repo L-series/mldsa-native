@@ -46,23 +46,6 @@ __contract__(
 );
 
 
-#define pack_sig MLD_NAMESPACE(pack_sig)
-void pack_sig(uint8_t sig[CRYPTO_BYTES], const uint8_t c[MLDSA_CTILDEBYTES],
-              const polyvecl *z, const polyveck *h,
-              const unsigned int number_of_hints)
-__contract__(
-  requires(memory_no_alias(sig, CRYPTO_BYTES))
-  requires(memory_no_alias(c, MLDSA_CTILDEBYTES))
-  requires(memory_no_alias(z, sizeof(polyvecl)))
-  requires(memory_no_alias(h, sizeof(polyveck)))
-  requires(forall(k0, 0, MLDSA_L,
-    array_bound(z->vec[k0].coeffs, 0, MLDSA_N, -(MLDSA_GAMMA1 - 1), MLDSA_GAMMA1 + 1)))
-  requires(forall(k1, 0, MLDSA_K,
-    array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
-  requires(number_of_hints <= MLDSA_OMEGA)
-  assigns(object_whole(sig))
-);
-
 #define unpack_pk MLD_NAMESPACE(unpack_pk)
 void unpack_pk(uint8_t rho[MLDSA_SEEDBYTES], polyveck *t1,
                const uint8_t pk[CRYPTO_PUBLICKEYBYTES])
@@ -103,8 +86,38 @@ __contract__(
     array_bound(s2->vec[k2].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
 );
 
+#define pack_sig MLD_NAMESPACE(pack_sig)
+void pack_sig(uint8_t sig[CRYPTO_BYTES], const uint8_t c[MLDSA_CTILDEBYTES],
+              const polyvecl *z, const polyveck *h,
+              const unsigned int number_of_hints)
+__contract__(
+  requires(memory_no_alias(sig, CRYPTO_BYTES))
+  requires(memory_no_alias(c, MLDSA_CTILDEBYTES))
+  requires(memory_no_alias(z, sizeof(polyvecl)))
+  requires(memory_no_alias(h, sizeof(polyveck)))
+  requires(forall(k0, 0, MLDSA_L,
+    array_bound(z->vec[k0].coeffs, 0, MLDSA_N, -(MLDSA_GAMMA1 - 1), MLDSA_GAMMA1 + 1)))
+  requires(forall(k1, 0, MLDSA_K,
+    array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
+  requires(number_of_hints <= MLDSA_OMEGA)
+  assigns(object_whole(sig))
+);
+
 #define unpack_sig MLD_NAMESPACE(unpack_sig)
 int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
-               const uint8_t sig[CRYPTO_BYTES]);
-
+               const uint8_t sig[CRYPTO_BYTES])
+__contract__(
+  requires(memory_no_alias(sig, CRYPTO_BYTES))
+  requires(memory_no_alias(c, MLDSA_CTILDEBYTES))
+  requires(memory_no_alias(z, sizeof(polyvecl)))
+  requires(memory_no_alias(h, sizeof(polyveck)))
+  assigns(object_whole(c))
+  assigns(object_whole(z))
+  assigns(object_whole(h))
+  ensures(forall(k0, 0, MLDSA_L,
+    array_bound(z->vec[k0].coeffs, 0, MLDSA_N, -(MLDSA_GAMMA1 - 1), MLDSA_GAMMA1 + 1)))
+  ensures(forall(k1, 0, MLDSA_K,
+    array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
+  ensures(returnvalue >= 0 && return_value <= 1)
+);
 #endif

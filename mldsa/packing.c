@@ -228,12 +228,10 @@ int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
 {
   unsigned int i, j, k;
 
-  for (i = 0; i < MLDSA_CTILDEBYTES; ++i)
-    c[i] = sig[i];
+  memcpy(c, sig, MLDSA_CTILDEBYTES);
   sig += MLDSA_CTILDEBYTES;
 
-  for (i = 0; i < MLDSA_L; ++i)
-    polyz_unpack(&z->vec[i], sig + i * MLDSA_POLYZ_PACKEDBYTES);
+  polyvecl_unpack_z(z, sig);
   sig += MLDSA_L * MLDSA_POLYZ_PACKEDBYTES;
 
   /* Decode h */
