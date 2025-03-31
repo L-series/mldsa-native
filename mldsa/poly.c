@@ -60,6 +60,26 @@ void poly_caddq(poly *a)
 }
 
 /*************************************************
+ * Name:        poly_clear
+ *
+ * Description: Set all coefficients of a polynomial to 0
+ *
+ * Arguments:   - poly *c: pointer to output polynomial
+ **************************************************/
+void poly_clear(poly *c)
+{
+  unsigned int i;
+  for (i = 0; i < MLDSA_N; ++i)
+  __loop__(
+    invariant(i <= MLDSA_N)
+    invariant(forall(k, 0, i, c->coeffs[k] == 0))
+  )
+  {
+    c->coeffs[i] = 0;
+  }
+}
+
+/*************************************************
  * Name:        poly_add
  *
  * Description: Add polynomials. No modular reduction is performed.

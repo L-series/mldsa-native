@@ -19,6 +19,14 @@ void poly_reduce(poly *a);
 #define poly_caddq MLD_NAMESPACE(poly_caddq)
 void poly_caddq(poly *a);
 
+#define poly_clear MLD_NAMESPACE(poly_clear)
+void poly_clear(poly *c)
+__contract__(
+  requires(memory_no_alias(c, sizeof(poly)))
+  assigns(memory_slice(c, sizeof(poly)))
+  ensures(forall(k, 0, MLDSA_N, c->coeffs[k] == 0))
+);
+
 #define poly_add MLD_NAMESPACE(poly_add)
 void poly_add(poly *c, const poly *a, const poly *b)
 __contract__(
