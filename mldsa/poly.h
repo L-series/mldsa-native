@@ -27,7 +27,7 @@ typedef struct
 void poly_reduce(poly *a)
 __contract__(
   requires(memory_no_alias(a, sizeof(poly)))
-  requires(forall(k0, 0, MLDSA_N, a->coeffs[k0] <= REDUCE_DOMAIN_MAX)) 
+  requires(forall(k0, 0, MLDSA_N, a->coeffs[k0] <= REDUCE_DOMAIN_MAX))
   assigns(memory_slice(a, sizeof(poly)))
   ensures(array_bound(a->coeffs, 0, MLDSA_N, -REDUCE_RANGE_MAX, REDUCE_RANGE_MAX))
 );
@@ -44,10 +44,17 @@ __contract__(
 void poly_caddq(poly *a);
 
 #define poly_clear MLD_NAMESPACE(poly_clear)
+/*************************************************
+ * Name:        poly_clear
+ *
+ * Description: Set all coefficients of a polynomial to 0
+ *
+ * Arguments:   - poly *c: pointer to output polynomial
+ **************************************************/
 void poly_clear(poly *c)
 __contract__(
   requires(memory_no_alias(c, sizeof(poly)))
-  assigns(object_whole(c))
+  assigns(memory_slice(c, sizeof(poly)))
   ensures(forall(k, 0, MLDSA_N, c->coeffs[k] == 0))
 );
 
