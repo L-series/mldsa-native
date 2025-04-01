@@ -179,12 +179,7 @@ int unpack_hints(polyveck *h,
     invariant(old_hint_count <= MLDSA_OMEGA)
   )
   {
-    const unsigned int new_hint_count = packed_hints[MLDSA_OMEGA + i];
-
-    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
-    {
-      return 1;
-    }
+    const unsigned int new_hint_count = sig[MLDSA_OMEGA + i];
 
     /* new_hint_count must increase or stay the same, but also remain */
     /* less than or equal to MLDSA_OMEGA                              */
