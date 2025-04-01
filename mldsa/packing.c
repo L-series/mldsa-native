@@ -236,6 +236,12 @@ int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
   sig += MLDSA_L * MLDSA_POLYZ_PACKEDBYTES;
 
   /* Decode h */
+
+  /* Set all coefficients of all polynomials to 0.    */
+  /* Only those that are actually non-zero hints will */
+  /* be overwritten below.                            */
+  polyveck_clear(h);
+
   old_hint_count = 0;
   for (i = 0; i < MLDSA_K; ++i)
   __loop__(
@@ -244,15 +250,10 @@ int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
   {
     const unsigned int new_hint_count = sig[MLDSA_OMEGA + i];
 
-    /* Set all coefficients of entire polynomial to 0.  */
-    /* Only those that are actually non-zero hints will */
-    /* be overwritten below.                            */
-    poly_clear(&h->vec[i]);
-
-//    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
-//    {
-//      return 1;
-//    }
+    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
+    {
+      return 1;
+    }
 
     /* new_hint_count must increase or stay the same, but also remain */
     /* less than or equal to MLDSA_OMEGA                              */
@@ -275,7 +276,8 @@ int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
         {
           return 1;
         }
-        h->vec[i].coeffs[sig[j]] = 1;
+        const uint8_t this_hint_index = sig[j];
+        h->vec[i].coeffs[this_hint_index] = 1;
       }
 
       old_hint_count = new_hint_count;

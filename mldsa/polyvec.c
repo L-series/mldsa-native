@@ -180,6 +180,28 @@ void polyveck_uniform_eta(polyveck *v, const uint8_t seed[MLDSA_CRHBYTES],
 }
 
 /*************************************************
+ * Name:        polyveck_clear
+ *
+ * Description: Clear coefficients of polynomials in vector of length MLDSA_K
+ *              to all 0
+ *
+ * Arguments:   - polyveck *v: pointer to input/output vector
+ **************************************************/
+void polyveck_clear(polyveck *v)
+{
+  unsigned int i;
+
+  for (i = 0; i < MLDSA_K; i++)
+  __loop__
+  (
+    invariant(i <= MLDSA_K)
+  )
+  {
+    poly_clear(&v->vec[i]);
+  }
+}
+
+/*************************************************
  * Name:        polyveck_reduce
  *
  * Description: Reduce coefficients of polynomials in vector of length MLDSA_K

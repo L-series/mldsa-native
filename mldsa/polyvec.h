@@ -59,8 +59,16 @@ typedef struct
 void polyveck_uniform_eta(polyveck *v, const uint8_t seed[MLDSA_CRHBYTES],
                           uint16_t nonce);
 
+#define polyveck_clear MLD_NAMESPACE(polyveck_clear)
+void polyveck_clear(polyveck *v)
+__contract__(
+  requires(memory_no_alias(v, sizeof(polyveck)))
+  assigns(memory_slice(v, sizeof(polyveck)))
+);
+
 #define polyveck_reduce MLD_NAMESPACE(polyveck_reduce)
 void polyveck_reduce(polyveck *v);
+
 #define polyveck_caddq MLD_NAMESPACE(polyveck_caddq)
 void polyveck_caddq(polyveck *v);
 
