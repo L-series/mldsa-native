@@ -10,5 +10,6 @@ void harness(void)
   uint8_t *sig;
   polyveck *h;
   polyvecl *z;
-  unpack_sig(c, z, h, sig);
+  int r;
+  r = unpack_sig(c, z, h, sig);
 }
