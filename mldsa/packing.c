@@ -210,6 +210,92 @@ void pack_sig(uint8_t sig[CRYPTO_BYTES], const uint8_t c[MLDSA_CTILDEBYTES],
   }
 }
 
+int unpack_hints(polyveck *h,
+                 const uint8_t packed_hints[MLDSA_POLYVECH_PACKEDBYTES])
+{
+  unsigned int i, j;
+  unsigned int old_hint_count;
+
+  /* Set all coefficients of all polynomials to 0.    */
+  /* Only those that are actually non-zero hints will */
+  /* be overwritten below.                            */
+  polyveck_clear(h);
+
+  cassert(forall(k1, 0, MLDSA_K,
+                 forall(k2, 0, MLDSA_N, h->vec[k1].coeffs[k2] == 0)));
+
+  old_hint_count = 0;
+  for (i = 0; i < MLDSA_K; ++i)
+  __loop__(
+    assigns(i, j, old_hint_count, object_whole(h))
+    invariant(i <= MLDSA_K)
+    invariant(old_hint_count <= MLDSA_OMEGA)
+  )
+  {
+    const unsigned int new_hint_count = packed_hints[MLDSA_OMEGA + i];
+
+    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
+    {
+      return 1;
+    }
+
+    /* new_hint_count must increase or stay the same, but also remain */
+    /* less than or equal to MLDSA_OMEGA                              */
+    if (new_hint_count >= old_hint_count && new_hint_count <= MLDSA_OMEGA)
+    {
+      /* If new_hint_count == old_hint_count, then this polynomial has */
+      /* zero hints, so this loop executes zero times and we move      */
+      /* straight on to the next polynomial.                           */
+      for (j = old_hint_count; j < new_hint_count; ++j)
+      __loop__(
+        assigns(j, object_whole(h->vec))
+        invariant(i <= MLDSA_K)
+        invariant(j >= old_hint_count)
+        invariant(j <= new_hint_count)
+        invariant(old_hint_count >= 0)
+        invariant(old_hint_count <= MLDSA_OMEGA)
+        invariant(new_hint_count >= old_hint_count)
+        invariant(new_hint_count <= MLDSA_OMEGA)
+      )
+      {
+        const uint8_t this_hint_index = packed_hints[j];
+        /* Coefficients must be ordered for strong unforgeability */
+        if (j == old_hint_count)
+        {
+          h->vec[i].coeffs[this_hint_index] = 1;
+        } else {
+          cassert(j >= 1);
+          if (packed_hints[j] > packed_hints[j - 1])
+          {
+            h->vec[i].coeffs[this_hint_index] = 1;
+          } else {
+            return 1;
+          }
+        }
+      }
+
+      old_hint_count = new_hint_count;
+    } else {
+      /* Error - new_hint_count is invalid */
+      return 1;
+    }
+  }
+
+  /* Extra indices must be zero for strong unforgeability */
+  for (j = old_hint_count; j < MLDSA_OMEGA; ++j)
+  __loop__(
+    invariant(j <= MLDSA_OMEGA)
+  )
+  {
+    if (packed_hints[j] != 0)
+    {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 /*************************************************
  * Name:        unpack_sig
  *
@@ -226,78 +312,11 @@ void pack_sig(uint8_t sig[CRYPTO_BYTES], const uint8_t c[MLDSA_CTILDEBYTES],
 int unpack_sig(uint8_t c[MLDSA_CTILDEBYTES], polyvecl *z, polyveck *h,
                const uint8_t sig[CRYPTO_BYTES])
 {
-  unsigned int i, j;
-  unsigned int old_hint_count;
-  
   memcpy(c, sig, MLDSA_CTILDEBYTES);
   sig += MLDSA_CTILDEBYTES;
 
   polyvecl_unpack_z(z, sig);
   sig += MLDSA_L * MLDSA_POLYZ_PACKEDBYTES;
 
-  /* Decode h */
-
-  /* Set all coefficients of all polynomials to 0.    */
-  /* Only those that are actually non-zero hints will */
-  /* be overwritten below.                            */
-  polyveck_clear(h);
-
-  old_hint_count = 0;
-  for (i = 0; i < MLDSA_K; ++i)
-  __loop__(
-    invariant(i <= MLDSA_K)
-  )
-  {
-    const unsigned int new_hint_count = sig[MLDSA_OMEGA + i];
-
-    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
-    {
-      return 1;
-    }
-
-    /* new_hint_count must increase or stay the same, but also remain */
-    /* less than or equal to MLDSA_OMEGA                              */
-    if (new_hint_count >= old_hint_count && new_hint_count <= MLDSA_OMEGA)
-    {
-      /* If new_hint_count == old_hint_count, then this polynomial has */
-      /* zero hints, so this loop executes zero times and we move      */
-      /* straight on to the next polynomial.                           */
-      for (j = old_hint_count; j < new_hint_count; ++j)
-      __loop__(
-        invariant(i <= MLDSA_K)
-        invariant(j >= old_hint_count)
-        invariant(j <= new_hint_count)
-        invariant(new_hint_count >= old_hint_count)
-        invariant(new_hint_count <= MLDSA_OMEGA)
-      )
-      {
-        /* Coefficients must be ordered for strong unforgeability */
-        if (j > old_hint_count && sig[j] <= sig[j - 1])
-        {
-          return 1;
-        }
-        const uint8_t this_hint_index = sig[j];
-        h->vec[i].coeffs[this_hint_index] = 1;
-      }
-
-      old_hint_count = new_hint_count;
-    } else {
-      /* Error - new_hint_count is invalid */
-      return 1;
-    }
-  }
-
-  /* Extra indices must be zero for strong unforgeability */
-  for (j = old_hint_count; j < MLDSA_OMEGA; ++j)
-  __loop__(
-    invariant(j <= MLDSA_OMEGA)
-  )
-  {
-    if (sig[j] != 0)
-    {
-      return 1;
-    }
-  }
-
-  return 0;
+  return unpack_hints(h, sig);
 }

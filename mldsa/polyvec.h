@@ -64,6 +64,8 @@ void polyveck_clear(polyveck *v)
 __contract__(
   requires(memory_no_alias(v, sizeof(polyveck)))
   assigns(object_whole(v))
+  ensures(forall(k1, 0, MLDSA_K,
+                 forall(k2, 0, MLDSA_N, v->vec[k1].coeffs[k2] == 0)))
 );
 
 #define polyveck_reduce MLD_NAMESPACE(polyveck_reduce)
