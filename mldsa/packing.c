@@ -165,12 +165,6 @@ int unpack_hints(polyveck *h,
   cassert(forall(k1, 0, MLDSA_K,
                  forall(k2, 0, MLDSA_N, h->vec[k1].coeffs[k2] == 0)));
 
-  memcpy(c, sig, MLDSA_CTILDEBYTES);
-  sig += MLDSA_CTILDEBYTES;
-
-  polyvecl_unpack_z(z, sig);
-  sig += MLDSA_L * MLDSA_POLYZ_PACKEDBYTES;
-
   old_hint_count = 0;
   for (i = 0; i < MLDSA_K; ++i)
   __loop__(
@@ -179,7 +173,12 @@ int unpack_hints(polyveck *h,
     invariant(old_hint_count <= MLDSA_OMEGA)
   )
   {
-    const unsigned int new_hint_count = sig[MLDSA_OMEGA + i];
+    const unsigned int new_hint_count = packed_hints[MLDSA_OMEGA + i];
+
+    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
+    {
+      return 1;
+    }
 
     /* new_hint_count must increase or stay the same, but also remain */
     /* less than or equal to MLDSA_OMEGA                              */
