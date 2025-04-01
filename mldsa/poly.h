@@ -23,7 +23,7 @@ void poly_caddq(poly *a);
 void poly_clear(poly *c)
 __contract__(
   requires(memory_no_alias(c, sizeof(poly)))
-  assigns(memory_slice(c, sizeof(poly)))
+  assigns(object_whole(c))
   ensures(forall(k, 0, MLDSA_N, c->coeffs[k] == 0))
 );
 

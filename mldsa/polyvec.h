@@ -63,7 +63,7 @@ void polyveck_uniform_eta(polyveck *v, const uint8_t seed[MLDSA_CRHBYTES],
 void polyveck_clear(polyveck *v)
 __contract__(
   requires(memory_no_alias(v, sizeof(polyveck)))
-  assigns(memory_slice(v, sizeof(polyveck)))
+  assigns(object_whole(v))
 );
 
 #define polyveck_reduce MLD_NAMESPACE(polyveck_reduce)

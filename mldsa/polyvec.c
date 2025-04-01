@@ -194,6 +194,7 @@ void polyveck_clear(polyveck *v)
   for (i = 0; i < MLDSA_K; i++)
   __loop__
   (
+    assigns(i, object_whole(v))
     invariant(i <= MLDSA_K)
   )
   {
