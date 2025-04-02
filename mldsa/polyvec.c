@@ -196,6 +196,8 @@ void polyveck_clear(polyveck *v)
   (
     assigns(i, object_whole(v))
     invariant(i <= MLDSA_K)
+    invariant(forall(k1, 0, i,
+                     forall(k2, 0, MLDSA_N, v->vec[k1].coeffs[k2] == 0)))
   )
   {
     poly_clear(&v->vec[i]);
