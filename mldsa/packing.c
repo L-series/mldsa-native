@@ -49,7 +49,9 @@ void unpack_pk(uint8_t rho[MLDSA_SEEDBYTES], polyveck *t1,
   pk += MLDSA_SEEDBYTES;
 
   for (i = 0; i < MLDSA_K; ++i)
+  {
     polyt1_unpack(&t1->vec[i], pk + i * MLDSA_POLYT1_PACKEDBYTES);
+  }
 }
 
 /*************************************************
@@ -263,19 +265,25 @@ int unpack_hints(polyveck *h,
         if (j == old_hint_count)
         {
           h->vec[i].coeffs[this_hint_index] = 1;
-        } else {
+        }
+        else
+        {
           cassert(j >= 1);
           if (packed_hints[j] > packed_hints[j - 1])
           {
             h->vec[i].coeffs[this_hint_index] = 1;
-          } else {
+          }
+          else
+          {
             return 1;
           }
         }
       }
 
       old_hint_count = new_hint_count;
-    } else {
+    }
+    else
+    {
       /* Error - new_hint_count is invalid */
       return 1;
     }
