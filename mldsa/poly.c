@@ -10,17 +10,6 @@
 #include "rounding.h"
 #include "symmetric.h"
 
-#ifdef DBENCH
-#include "test/cpucycles.h"
-extern const uint64_t timing_overhead;
-extern uint64_t *tred, *tadd, *tsub, *tmul, *tround, *tsample, *tpack;
-#define DBENCH_START() uint64_t time = cpucycles()
-#define DBENCH_STOP(t) t += cpucycles() - time - timing_overhead
-#else
-#define DBENCH_START()
-#define DBENCH_STOP(t)
-#endif
-
 /*************************************************
  * Name:        poly_reduce
  *
@@ -32,7 +21,6 @@ extern uint64_t *tred, *tadd, *tsub, *tmul, *tround, *tsample, *tpack;
 void poly_reduce(poly *a)
 {
   unsigned int i;
-  DBENCH_START();
 
   for (i = 0; i < MLDSA_N; ++i)
   __loop__(
@@ -42,8 +30,6 @@ void poly_reduce(poly *a)
   {
     a->coeffs[i] = reduce32(a->coeffs[i]);
   }
-
-  DBENCH_STOP(*tred);
 }
 
 /*************************************************
@@ -57,14 +43,11 @@ void poly_reduce(poly *a)
 void poly_caddq(poly *a)
 {
   unsigned int i;
-  DBENCH_START();
 
   for (i = 0; i < MLDSA_N; ++i)
   {
     a->coeffs[i] = caddq(a->coeffs[i]);
   }
-
-  DBENCH_STOP(*tred);
 }
 
 /*************************************************
@@ -123,15 +106,12 @@ void poly_add(poly *c, const poly *a, const poly *b)
 void poly_sub(poly *c, const poly *a, const poly *b)
 {
   unsigned int i;
-  DBENCH_START();
 
   for (i = 0; i < MLDSA_N; ++i)
   __loop__(
     invariant(i <= MLDSA_N)
     invariant(forall(k1, 0, i, c->coeffs[k1] == a->coeffs[k1] - b->coeffs[k1])))
   c->coeffs[i] = a->coeffs[i] - b->coeffs[i];
-
-  DBENCH_STOP(*tsub);
 }
 
 /*************************************************
@@ -166,14 +146,7 @@ void poly_shiftl(poly *a)
  *
  * Arguments:   - poly *a: pointer to input/output polynomial
  **************************************************/
-void poly_ntt(poly *a)
-{
-  DBENCH_START();
-
-  ntt(a->coeffs);
-
-  DBENCH_STOP(*tmul);
-}
+void poly_ntt(poly *a) { ntt(a->coeffs); }
 
 /*************************************************
  * Name:        poly_invntt_tomont
@@ -184,14 +157,7 @@ void poly_ntt(poly *a)
  *
  * Arguments:   - poly *a: pointer to input/output polynomial
  **************************************************/
-void poly_invntt_tomont(poly *a)
-{
-  DBENCH_START();
-
-  invntt_tomont(a->coeffs);
-
-  DBENCH_STOP(*tmul);
-}
+void poly_invntt_tomont(poly *a) { invntt_tomont(a->coeffs); }
 
 /*************************************************
  * Name:        poly_pointwise_montgomery
@@ -207,14 +173,11 @@ void poly_invntt_tomont(poly *a)
 void poly_pointwise_montgomery(poly *c, const poly *a, const poly *b)
 {
   unsigned int i;
-  DBENCH_START();
 
   for (i = 0; i < MLDSA_N; ++i)
   {
     c->coeffs[i] = montgomery_reduce((int64_t)a->coeffs[i] * b->coeffs[i]);
   }
-
-  DBENCH_STOP(*tmul);
 }
 
 /*************************************************
@@ -232,14 +195,11 @@ void poly_pointwise_montgomery(poly *c, const poly *a, const poly *b)
 void poly_power2round(poly *a1, poly *a0, const poly *a)
 {
   unsigned int i;
-  DBENCH_START();
 
   for (i = 0; i < MLDSA_N; ++i)
   {
     power2round(&a0->coeffs[i], &a1->coeffs[i], a->coeffs[i]);
   }
-
-  DBENCH_STOP(*tround);
 }
 
 /*************************************************
@@ -287,7 +247,6 @@ void poly_decompose(poly *a1, poly *a0, const poly *a)
 unsigned int poly_make_hint(poly *h, const poly *a0, const poly *a1)
 {
   unsigned int i, s = 0;
-  DBENCH_START();
 
   for (i = 0; i < MLDSA_N; ++i)
   __loop__(
@@ -300,7 +259,6 @@ unsigned int poly_make_hint(poly *h, const poly *a0, const poly *a1)
     s += hint_bit;
   }
 
-  DBENCH_STOP(*tround);
   return s;
 }
 
@@ -316,7 +274,6 @@ unsigned int poly_make_hint(poly *h, const poly *a0, const poly *a1)
 void poly_use_hint(poly *b, const poly *a, const poly *h)
 {
   unsigned int i;
-  DBENCH_START();
 
   for (i = 0; i < MLDSA_N; ++i)
   __loop__(
@@ -326,8 +283,6 @@ void poly_use_hint(poly *b, const poly *a, const poly *h)
   {
     b->coeffs[i] = use_hint(a->coeffs[i], h->coeffs[i]);
   }
-
-  DBENCH_STOP(*tround);
 }
 
 /*************************************************
@@ -346,7 +301,6 @@ int poly_chknorm(const poly *a, int32_t B)
 {
   unsigned int i;
   int32_t t;
-  DBENCH_START();
 
   if (B > (MLDSA_Q - 1) / 8)
   {
@@ -364,12 +318,10 @@ int poly_chknorm(const poly *a, int32_t B)
 
     if (t >= B)
     {
-      DBENCH_STOP(*tsample);
       return 1;
     }
   }
 
-  DBENCH_STOP(*tsample);
   return 0;
 }
 
@@ -403,7 +355,6 @@ __contract__(
 {
   unsigned int ctr, pos;
   uint32_t t;
-  DBENCH_START();
 
   ctr = pos = 0;
   /* pos + 3 cannot overflow due to the assumption
@@ -425,7 +376,6 @@ __contract__(
     }
   }
 
-  DBENCH_STOP(*tsample);
   return ctr;
 }
 
@@ -504,7 +454,6 @@ __contract__(
 {
   unsigned int ctr, pos;
   uint32_t t0, t1;
-  DBENCH_START();
 
   ctr = pos = 0;
   while (ctr < len && pos < buflen)
@@ -541,7 +490,6 @@ __contract__(
 #endif
   }
 
-  DBENCH_STOP(*tsample);
   return ctr;
 }
 
