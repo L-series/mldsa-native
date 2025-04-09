@@ -158,6 +158,9 @@ void polyveck_uniform_eta(polyveck *v, const uint8_t seed[MLDSA_CRHBYTES],
 void polyveck_clear(polyveck *v)
 {
   unsigned int i;
+  poly null_poly;
+
+  poly_clear(&null_poly);
 
   for (i = 0; i < MLDSA_K; i++)
   __loop__
@@ -168,7 +171,7 @@ void polyveck_clear(polyveck *v)
                      forall(k2, 0, MLDSA_N, v->vec[k1].coeffs[k2] == 0)))
   )
   {
-    poly_clear(&v->vec[i]);
+    v->vec[i] = null_poly;
   }
 }
 
