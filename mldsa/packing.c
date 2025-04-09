@@ -151,8 +151,30 @@ void pack_sig(uint8_t sig[CRYPTO_BYTES], const uint8_t c[MLDSA_CTILDEBYTES],
   }
 }
 
-int unpack_hints(polyveck *h,
-                 const uint8_t packed_hints[MLDSA_POLYVECH_PACKEDBYTES])
+
+/*************************************************
+ * Name:        unpack_hints
+ *
+ * Description: Unpack raw hint bytes into a polyveck
+ *              struct
+ *
+ * Arguments:   - polyveck *h: pointer to output hint vector h
+ *              - const uint8_t packed_hints[MLDSA_POLYVECH_PACKEDBYTES]:
+ *                raw hint bytes
+ *
+ * Returns 1 in case of malformed hints; otherwise 0.
+ **************************************************/
+static int unpack_hints(polyveck *h,
+                        const uint8_t packed_hints[MLDSA_POLYVECH_PACKEDBYTES])
+__contract__(
+  requires(memory_no_alias(packed_hints, MLDSA_POLYVECH_PACKEDBYTES))
+  requires(memory_no_alias(h, sizeof(polyveck)))
+  assigns(object_whole(h))
+  /* All returned coefficients are either 0 or 1 */
+  ensures(forall(k1, 0, MLDSA_K,
+    array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
+  ensures(return_value >= 0 && return_value <= 1)
+)
 {
   unsigned int i, j;
   unsigned int old_hint_count;
@@ -162,8 +184,10 @@ int unpack_hints(polyveck *h,
   /* be overwritten below.                            */
   polyveck_clear(h);
 
-  cassert(forall(k1, 0, MLDSA_K,
-                 forall(k2, 0, MLDSA_N, h->vec[k1].coeffs[k2] == 0)));
+  /* Assert that all values of h are either 0 or 1                   */
+  /* This establishes the post-condition before we fill in any hints */
+  cassert(
+      forall(k1, 0, MLDSA_K, array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)));
 
   old_hint_count = 0;
   for (i = 0; i < MLDSA_K; ++i)
@@ -171,14 +195,12 @@ int unpack_hints(polyveck *h,
     assigns(i, j, old_hint_count, object_whole(h))
     invariant(i <= MLDSA_K)
     invariant(old_hint_count <= MLDSA_OMEGA)
+    /* Maintain the post-condition */
+    invariant(forall(k1, 0, MLDSA_K, array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
   )
   {
+    /* Grab the hint count for the i'th polynomial */
     const unsigned int new_hint_count = packed_hints[MLDSA_OMEGA + i];
-
-    if (new_hint_count < old_hint_count || new_hint_count > MLDSA_OMEGA)
-    {
-      return 1;
-    }
 
     /* new_hint_count must increase or stay the same, but also remain */
     /* less than or equal to MLDSA_OMEGA                              */
@@ -197,19 +219,26 @@ int unpack_hints(polyveck *h,
         invariant(old_hint_count <= MLDSA_OMEGA)
         invariant(new_hint_count >= old_hint_count)
         invariant(new_hint_count <= MLDSA_OMEGA)
+        /* Maintain the post-condition */
+        invariant(forall(k1, 0, MLDSA_K, array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
       )
       {
         const uint8_t this_hint_index = packed_hints[j];
         /* Coefficients must be ordered for strong unforgeability */
         if (j == old_hint_count)
         {
+          /* First hint for this polynomial, so no need to check ordering */
           h->vec[i].coeffs[this_hint_index] = 1;
         }
         else
         {
+          /* Second or more hint, so we must check that they're increasing. */
+          /* To safety check the _previous_ hint, we need to be able to     */
+          /* evaluate j - 1 without underflow, so...                        */
           cassert(j >= 1);
           if (packed_hints[j] > packed_hints[j - 1])
           {
+            /* This new hint is larger than the previous hint, which is OK  */
             h->vec[i].coeffs[this_hint_index] = 1;
           }
           else
@@ -232,6 +261,8 @@ int unpack_hints(polyveck *h,
   for (j = old_hint_count; j < MLDSA_OMEGA; ++j)
   __loop__(
     invariant(j <= MLDSA_OMEGA)
+    /* Maintain the post-condition */
+    invariant(forall(k1, 0, MLDSA_K, array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
   )
   {
     if (packed_hints[j] != 0)

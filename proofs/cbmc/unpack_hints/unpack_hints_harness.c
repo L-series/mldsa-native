@@ -3,6 +3,8 @@
 
 #include "packing.h"
 
+int unpack_hints(polyveck *h,
+                 const uint8_t packed_hints[MLDSA_POLYVECH_PACKEDBYTES]);
 
 void harness(void)
 {

@@ -164,18 +164,6 @@ __contract__(
     array_bound(s2->vec[k2].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
 );
 
-#define unpack_hints MLD_NAMESPACE(unpack_hints)
-int unpack_hints(polyveck *h,
-                 const uint8_t packed_hints[MLDSA_POLYVECH_PACKEDBYTES])
-__contract__(
-  requires(memory_no_alias(packed_hints, MLDSA_POLYVECH_PACKEDBYTES))
-  requires(memory_no_alias(h, sizeof(polyveck)))
-  assigns(object_whole(h))
-  ensures(forall(k1, 0, MLDSA_K,
-    array_bound(h->vec[k1].coeffs, 0, MLDSA_N, 0, 2)))
-  ensures(return_value >= 0 && return_value <= 1)
-);
-
 #define unpack_sig MLD_NAMESPACE(unpack_sig)
 /*************************************************
  * Name:        unpack_sig
