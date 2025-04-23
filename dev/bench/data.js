@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1744876461253,
+  "lastUpdate": 1745380221742,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -1381,6 +1381,77 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 893623,
+            "unit": "cycles"
+          }
+        ]
+      }
+    ],
+    "Arm Cortex-A55 (Snapdragon 888) benchmarks (no-opt)": [
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1b9bf73216c144f7ff8b01b8ce7e71a89731432d",
+          "message": "Merge pull request #177 from pq-code-package/more-benchmarks-ci-mac\n\nBenchmarking CI: Add Mac Mini M1",
+          "timestamp": "2025-04-23T04:47:01+01:00",
+          "tree_id": "faca851012d607f1eb64686c1ae1a46141475d1b",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/1b9bf73216c144f7ff8b01b8ce7e71a89731432d"
+        },
+        "date": 1745380219579,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 481370,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 1796168,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 553081,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 814165,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 2892760,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 867927,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 1319019,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 3655606,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 1411411,
             "unit": "cycles"
           }
         ]
