@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "cbmc.h"
@@ -152,6 +153,7 @@ rej:
   polyvecl_reduce(&z);
   if (polyvecl_chknorm(&z, MLDSA_GAMMA1 - MLDSA_BETA))
   {
+    printf("reject z\n");
     goto rej;
   }
 
@@ -163,6 +165,7 @@ rej:
   polyveck_reduce(&w0);
   if (polyveck_chknorm(&w0, MLDSA_GAMMA2 - MLDSA_BETA))
   {
+    printf("reject w0\n");
     goto rej;
   }
 
@@ -172,6 +175,7 @@ rej:
   polyveck_reduce(&h);
   if (polyveck_chknorm(&h, MLDSA_GAMMA2))
   {
+    printf("reject h\n");
     goto rej;
   }
 
@@ -179,6 +183,7 @@ rej:
   n = polyveck_make_hint(&h, &w0, &w1);
   if (n > MLDSA_OMEGA)
   {
+    printf("reject n\n");
     goto rej;
   }
 

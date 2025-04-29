@@ -197,6 +197,15 @@ void invntt_tomont(int32_t a[MLDSA_N])
   unsigned int layer, j;
   const int32_t f = 41978; /* mont^2/256 */
 
+  /* Invert and reduce first to allow for weaker precondition */
+  for (j = 0; j < MLDSA_N; ++j)
+  __loop__(
+    invariant(j <= MLDSA_N)
+    invariant(array_abs_bound(a, 0, j, MLDSA_Q)))
+  {
+    a[j] = mld_fqmul(a[j], f);
+  }
+
   for (layer = 8; layer >= 1; layer--)
   __loop__(
     invariant(layer <= 8)
@@ -205,15 +214,5 @@ void invntt_tomont(int32_t a[MLDSA_N])
     invariant(array_abs_bound(a, 0, MLDSA_N, (MLDSA_N >> layer) * MLDSA_Q)))
   {
     mld_invntt_layer(a, layer);
-  }
-
-  /* Coefficient bounds are now at 256Q. We now invert and reduce  */
-  /* each coefficient to bring them back to be bounded by 1Q       */
-  for (j = 0; j < MLDSA_N; ++j)
-  __loop__(
-    invariant(j <= MLDSA_N)
-    invariant(array_abs_bound(a, 0, j, MLDSA_Q)))
-  {
-    a[j] = mld_fqmul(a[j], f);
   }
 }
