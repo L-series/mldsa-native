@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1747797530442,
+  "lastUpdate": 1747797532736,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -35077,6 +35077,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 337970,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e2d3ea1b0f93137c5dd0392dd3a5dfad82879a9a",
+          "message": "Merge pull request #253 from pq-code-package/cbmc-poly_uniform_gamma1_4x\n\nAdd CBMC proof and spec for `polyvecl_uniform_gamma1`, `poly_uniform_gamma1_4x`, `mld_shake256x4_absorb_once`, `mld_shake256x4_squeezeblocks`",
+          "timestamp": "2025-05-21T04:15:17+01:00",
+          "tree_id": "24d6952b9b2baa6009b0f48945fa06cb29dae437",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/e2d3ea1b0f93137c5dd0392dd3a5dfad82879a9a"
+        },
+        "date": 1747797532439,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 120029,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 367877,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 128295,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 201956,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 569014,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 201794,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 334901,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 747180,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 337957,
             "unit": "cycles"
           }
         ]
