@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1748332233842,
+  "lastUpdate": 1748332238865,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -3242,6 +3242,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 750645,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "772b4b064dd4d12275ba66d111f4cf0f9dffbc94",
+          "message": "Merge pull request #290 from pq-code-package/nix-slothy\n\nNix: Simplify SLOTHY flake + fix cbmc-viewer hash",
+          "timestamp": "2025-05-27T08:47:36+01:00",
+          "tree_id": "bbe9f863f79cb60d2b5bdb893c58fdb8a7e39810",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/772b4b064dd4d12275ba66d111f4cf0f9dffbc94"
+        },
+        "date": 1748332214955,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 262194,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 737671,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 265945,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 491224,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1075469,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 442599,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 768598,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1451196,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 749580,
             "unit": "cycles"
           }
         ]
