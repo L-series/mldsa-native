@@ -177,12 +177,7 @@ void polyvecl_reduce(polyvecl *v)
     invariant(forall(k2, 0, i,
       array_bound(v->vec[k2].coeffs, 0, MLDSA_N, -REDUCE_RANGE_MAX, REDUCE_RANGE_MAX))))
   {
-    poly t = v->vec[i];
-    poly_reduce(&t);
-    /* Full struct assignment from local variables to simplify proof */
-    /* TODO: eliminate once CBMC resolves
-     * https://github.com/diffblue/cbmc/issues/8617 */
-    v->vec[i] = t;
+    poly_reduce(&v->vec[i]);
   }
 }
 
@@ -195,7 +190,7 @@ void polyvecl_add(polyvecl *u, const polyvecl *v)
   for (i = 0; i < MLDSA_L; ++i)
   __loop__(
     invariant(i <= MLDSA_L)
-    invariant(forall(k0, i, MLDSA_L, 
+    invariant(forall(k0, i, MLDSA_L,
               forall(k1, 0, MLDSA_N, u->vec[k0].coeffs[k1] == loop_entry(*u).vec[k0].coeffs[k1]))))
   {
     poly tmp = u->vec[i];
@@ -360,7 +355,7 @@ void polyveck_add(polyveck *u, const polyveck *v)
   for (i = 0; i < MLDSA_K; ++i)
   __loop__(
     invariant(i <= MLDSA_K)
-    invariant(forall(k0, i, MLDSA_K, 
+    invariant(forall(k0, i, MLDSA_K,
              forall(k1, 0, MLDSA_N, u->vec[k0].coeffs[k1] == loop_entry(*u).vec[k0].coeffs[k1]))))
   {
     poly tmp = u->vec[i];
@@ -379,7 +374,7 @@ void polyveck_sub(polyveck *u, const polyveck *v)
   for (i = 0; i < MLDSA_K; ++i)
   __loop__(
     invariant(i <= MLDSA_K)
-    invariant(forall(k0, i, MLDSA_K, 
+    invariant(forall(k0, i, MLDSA_K,
              forall(k1, 0, MLDSA_N, u->vec[k0].coeffs[k1] == loop_entry(*u).vec[k0].coeffs[k1]))))
   {
     poly tmp = u->vec[i];
