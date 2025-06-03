@@ -172,6 +172,7 @@ void polyvecl_reduce(polyvecl *v)
 
   for (i = 0; i < MLDSA_L; ++i)
   __loop__(
+    assigns(i, memory_slice(v, sizeof(polyvecl)))
     invariant(i <= MLDSA_L)
     invariant(forall(k0, i, MLDSA_L, forall(k1, 0, MLDSA_N, v->vec[k0].coeffs[k1] == loop_entry(*v).vec[k0].coeffs[k1])))
     invariant(forall(k2, 0, i,
