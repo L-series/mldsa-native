@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1749438065221,
+  "lastUpdate": 1749438066604,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -58950,6 +58950,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 sign",
             "value": 815320,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 382523,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4af4975a46463c347282dae4dad819edb38e9de0",
+          "message": "Merge pull request #313 from pq-code-package/remove-zig-0.11\n\nNix: Remove zig 0.10 and zig 0.11 shells and CI",
+          "timestamp": "2025-06-09T10:57:42+08:00",
+          "tree_id": "3038efd07387ac710bbf90c277ef6cb548e47738",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/4af4975a46463c347282dae4dad819edb38e9de0"
+        },
+        "date": 1749438065325,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 140030,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 388424,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 143155,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 227458,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 626576,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 231342,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 378024,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 814952,
             "unit": "cycles"
           },
           {
