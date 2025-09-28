@@ -129,25 +129,36 @@ def run_keyGen_test(tg, tc):
     info("OK")
 
 
+
 def run_sigGen_test(tg, tc):
     info(f"Running sigGen test case {tc['tcId']} ... ", end="")
     acvp_bin = get_acvp_binary(tg)
 
     assert tg["testType"] == "AFT"
 
-    # TODO: implement pre-hashing mode
-    if tg["preHash"] == "preHash":
-        info("SKIP preHash")
-        return
-
     # TODO: probably we want to handle handle the deterministic case differently
     if tg["deterministic"] is True:
         tc["rnd"] = "0" * 64
 
-    assert tc["hashAlg"] == "none"
+    if tg["preHash"] == "preHash":
+        # Skip non-SHAKE256 hash functions for now
+        if tc["hashAlg"] != "SHAKE-256":
+            info(f"SKIP ({tc['hashAlg']})")
+            return
 
-    if tg["signatureInterface"] == "external":
+        assert len(tc["context"]) <= 2 * 255
 
+        acvp_call = exec_prefix + [
+            acvp_bin,
+            "sigGenPreHash",
+            f"message={tc['message']}",
+            f"context={tc['context']}",
+            f"rng={tc['rnd']}",
+            f"sk={tc['sk']}",
+            f"hashAlg={tc['hashAlg']}",
+        ]
+    elif tg["signatureInterface"] == "external":
+        assert tc["hashAlg"] == "none"
         assert len(tc["context"]) <= 2 * 255
         assert len(tc["message"]) <= 2 * 65536
 
@@ -160,6 +171,7 @@ def run_sigGen_test(tg, tc):
             f"context={tc['context']}",
         ]
     else:  # signatureInterface=internal
+        assert tc["hashAlg"] == "none"
         externalMu = 0
         if tg["externalMu"] is True:
             externalMu = 1
@@ -198,13 +210,25 @@ def run_sigVer_test(tg, tc):
     info(f"Running sigVer test case {tc['tcId']} ... ", end="")
     acvp_bin = get_acvp_binary(tg)
 
-    # TODO: implement pre-hashing mode
     if tg["preHash"] == "preHash":
-        info("SKIP preHash")
-        return
+        # Skip non-SHAKE256 hash functions for now
+        if tc["hashAlg"] != "SHAKE-256":
+            info(f"SKIP ({tc['hashAlg']})")
+            return
 
-    assert tc["hashAlg"] == "none"
-    if tg["signatureInterface"] == "external":
+        assert len(tc["context"]) <= 2 * 255
+
+        acvp_call = exec_prefix + [
+            acvp_bin,
+            "sigVerPreHash",
+            f"message={tc['message']}",
+            f"context={tc['context']}",
+            f"signature={tc['signature']}",
+            f"pk={tc['pk']}",
+            f"hashAlg={tc['hashAlg']}",
+        ]
+    elif tg["signatureInterface"] == "external":
+        assert tc["hashAlg"] == "none"
         assert len(tc["context"]) <= 2 * 255
         assert len(tc["message"]) <= 2 * 65536
 
@@ -217,6 +241,7 @@ def run_sigVer_test(tg, tc):
             f"pk={tc['pk']}",
         ]
     else:  # signatureInterface=internal
+        assert tc["hashAlg"] == "none"
         externalMu = 0
         if tg["externalMu"] is True:
             externalMu = 1

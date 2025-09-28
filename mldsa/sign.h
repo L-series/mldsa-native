@@ -23,6 +23,25 @@
 #include "polyvec.h"
 #include "sys.h"
 
+/*************************************************
+ * Hash algorithm enumeration for pre-hash functions
+ **************************************************/
+typedef enum
+{
+  MLD_SHA2_224,
+  MLD_SHA2_256,
+  MLD_SHA2_384,
+  MLD_SHA2_512,
+  MLD_SHA2_512_224,
+  MLD_SHA2_512_256,
+  MLD_SHA3_224,
+  MLD_SHA3_256,
+  MLD_SHA3_384,
+  MLD_SHA3_512,
+  MLD_SHAKE_128,
+  MLD_SHAKE_256
+} mld_hash_alg_t;
+
 #define crypto_sign_keypair_internal MLD_NAMESPACE(keypair_internal)
 /*************************************************
  * Name:        crypto_sign_keypair_internal
@@ -379,6 +398,89 @@ __contract__(
   requires(memory_no_alias(pk, CRYPTO_PUBLICKEYBYTES))
   assigns(memory_slice(m, smlen))
   assigns(memory_slice(mlen, sizeof(size_t)))
+  ensures(return_value == 0 || return_value == -1)
+);
+
+
+#define crypto_sign_signature_pre_hash MLD_NAMESPACE(signature_pre_hash)
+/*************************************************
+ * Name:        crypto_sign_signature_pre_hash
+ *
+ * Description: FIPS 204: Algorithm 4 HashML-DSA.Sign.
+ *              Computes signature with pre-hashed message.
+ *              The message is hashed internally.
+ *
+ * Arguments:   - uint8_t *sig: pointer to output signature (of length
+ *                              CRYPTO_BYTES)
+ *              - size_t *siglen: pointer to output length of signature
+ *              - const uint8_t *m: pointer to message to be hashed
+ *              - size_t mlen: length of message
+ *              - const uint8_t *ctx: pointer to context string
+ *              - size_t ctxlen: length of context string
+ *              - const uint8_t *rnd: pointer to random seed
+ *              - const uint8_t *sk: pointer to bit-packed secret key
+ *              - mld_hash_alg_t hashAlg: hash algorithm enumeration
+ *
+ * Returns 0 (success) or -1 (context string too long OR nonce exhaustion OR
+ *unsupported hash)
+ **************************************************/
+MLD_MUST_CHECK_RETURN_VALUE
+MLD_EXTERNAL_API
+int crypto_sign_signature_pre_hash(uint8_t *sig, size_t *siglen,
+                                   const uint8_t *m, size_t mlen,
+                                   const uint8_t *ctx, size_t ctxlen,
+                                   const uint8_t rnd[MLDSA_RNDBYTES],
+                                   const uint8_t *sk, mld_hash_alg_t hashAlg)
+__contract__(
+  requires(mlen <= MLD_MAX_BUFFER_SIZE)
+  requires(ctxlen <= MLD_MAX_BUFFER_SIZE)
+  requires(memory_no_alias(sig, CRYPTO_BYTES))
+  requires(memory_no_alias(siglen, sizeof(size_t)))
+  requires(memory_no_alias(m, mlen))
+  requires((ctx == NULL && ctxlen == 0) || memory_no_alias(ctx, ctxlen))
+  requires(memory_no_alias(rnd, MLDSA_RNDBYTES))
+  requires(memory_no_alias(sk, CRYPTO_SECRETKEYBYTES))
+  requires(hashAlg >= MLD_SHA2_224 && hashAlg <= MLD_SHAKE_256)
+  assigns(memory_slice(sig, CRYPTO_BYTES))
+  assigns(object_whole(siglen))
+  ensures((return_value == 0 && *siglen == CRYPTO_BYTES) ||
+          (return_value == -1 && *siglen == 0))
+);
+
+#define crypto_sign_verify_pre_hash MLD_NAMESPACE(verify_pre_hash)
+/*************************************************
+ * Name:        crypto_sign_verify_pre_hash
+ *
+ * Description: FIPS 204: Algorithm 5 HashML-DSA.Verify.
+ *              Verifies signature with pre-hashed message.
+ *              The message is hashed internally.
+ *
+ * Arguments:   - const uint8_t *sig: pointer to input signature
+ *              - size_t siglen: length of signature
+ *              - const uint8_t *m: pointer to message to be hashed
+ *              - size_t mlen: length of message
+ *              - const uint8_t *ctx: pointer to context string
+ *              - size_t ctxlen: length of context string
+ *              - const uint8_t *pk: pointer to bit-packed public key
+ *              - mld_hash_alg_t hashAlg: hash algorithm enumeration
+ *
+ * Returns 0 if signature could be verified correctly and -1 otherwise
+ **************************************************/
+MLD_MUST_CHECK_RETURN_VALUE
+MLD_EXTERNAL_API
+int crypto_sign_verify_pre_hash(const uint8_t *sig, size_t siglen,
+                                const uint8_t *m, size_t mlen,
+                                const uint8_t *ctx, size_t ctxlen,
+                                const uint8_t *pk, mld_hash_alg_t hashAlg)
+__contract__(
+  requires(mlen <= MLD_MAX_BUFFER_SIZE)
+  requires(ctxlen <= MLD_MAX_BUFFER_SIZE - 77)
+  requires(siglen <= MLD_MAX_BUFFER_SIZE)
+  requires(memory_no_alias(sig, siglen))
+  requires(memory_no_alias(m, mlen))
+  requires((ctx == NULL && ctxlen == 0) || memory_no_alias(ctx, ctxlen))
+  requires(memory_no_alias(pk, CRYPTO_PUBLICKEYBYTES))
+  requires(hashAlg >= MLD_SHA2_224 && hashAlg <= MLD_SHAKE_256)
   ensures(return_value == 0 || return_value == -1)
 );
 

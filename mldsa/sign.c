@@ -862,3 +862,147 @@ badsig:
 
   return -1;
 }
+
+/*************************************************
+ * Name:        prehash_message
+ *
+ * Description: Computes the pre-hash of a message and writes both the OID
+ *              and the pre-hash to a single output buffer.
+ *              Output format: oid (11 bytes) || pre-hash
+ *
+ * Arguments:   - uint8_t *out: pointer to output buffer (min 11 + 64 bytes)
+ *              - size_t *oid_ph_len: pointer to output length (OID + pre-hash)
+ *              - const uint8_t *m: pointer to input message
+ *              - size_t mlen: length of input message
+ *              - mld_hash_alg_t hashAlg: hash algorithm enumeration
+ *
+ * Returns 0 if hash algorithm is supported and -1 otherwise.
+ * Currently only SHAKE-256 is supported.
+ **************************************************/
+static int prehash_message(uint8_t *out, size_t *oid_ph_len, const uint8_t *m,
+                           size_t mlen, mld_hash_alg_t hashAlg)
+{
+  /* OIDs for supported hash functions - currently only SHAKE-256 is implemented
+   */
+  const uint8_t shake_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                     0x65, 0x03, 0x04, 0x02, 0x0C};
+
+  /* OIDs for hash functions to be added:
+  const uint8_t sha2_224_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x04};
+  const uint8_t sha2_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x01};
+  const uint8_t sha2_384_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x02};
+  const uint8_t sha2_512_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x03};
+  const uint8_t sha2_512_224_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                        0x65, 0x03, 0x04, 0x02, 0x05};
+  const uint8_t sha2_512_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                        0x65, 0x03, 0x04, 0x02, 0x06};
+  const uint8_t sha3_224_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x07};
+  const uint8_t sha3_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x08};
+  const uint8_t sha3_384_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x09};
+  const uint8_t sha3_512_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x0A};
+  const uint8_t shake_128_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                     0x65, 0x03, 0x04, 0x02, 0x0B};
+  */
+
+  switch (hashAlg)
+  {
+    case MLD_SHAKE_256:
+      mld_memcpy(out, shake_256_oid, 11);
+      mld_shake256(out + 11, 64, m, mlen);
+      *oid_ph_len = 11 + 64;
+      return 0;
+
+    /* Other hash algorithms not yet supported */
+    case MLD_SHA2_224:
+    case MLD_SHA2_256:
+    case MLD_SHA2_384:
+    case MLD_SHA2_512:
+    case MLD_SHA2_512_224:
+    case MLD_SHA2_512_256:
+    case MLD_SHA3_224:
+    case MLD_SHA3_256:
+    case MLD_SHA3_384:
+    case MLD_SHA3_512:
+    case MLD_SHAKE_128:
+    default:
+      return -1;
+  }
+  return -1;
+}
+
+MLD_MUST_CHECK_RETURN_VALUE
+MLD_EXTERNAL_API
+int crypto_sign_signature_pre_hash(uint8_t *sig, size_t *siglen,
+                                   const uint8_t *m, size_t mlen,
+                                   const uint8_t *ctx, size_t ctxlen,
+                                   const uint8_t rnd[MLDSA_RNDBYTES],
+                                   const uint8_t *sk, mld_hash_alg_t hashAlg)
+{
+  /* formatted message: 0x01 || ctxlen (1 byte) || ctx || oid || ph */
+  uint8_t fmsg[2 + 255 + 11 + 64];
+  size_t oid_ph_len;
+
+  if (ctxlen > 255)
+  {
+    *siglen = 0;
+    return -1;
+  }
+
+  fmsg[0] = 1;
+  fmsg[1] = ctxlen;
+  if (ctx != NULL && ctxlen != 0)
+  {
+    mld_memcpy(fmsg + 2, ctx, ctxlen);
+  }
+
+  /* Compute OID and pre-hash: writes oid || ph */
+  if (prehash_message(fmsg + 2 + ctxlen, &oid_ph_len, m, mlen, hashAlg))
+  {
+    *siglen = 0;
+    return -1;
+  }
+
+  return crypto_sign_signature_internal(
+      sig, siglen, fmsg, 2 + ctxlen + oid_ph_len, NULL, 0, rnd, sk, 0);
+}
+
+MLD_MUST_CHECK_RETURN_VALUE
+MLD_EXTERNAL_API
+int crypto_sign_verify_pre_hash(const uint8_t *sig, size_t siglen,
+                                const uint8_t *m, size_t mlen,
+                                const uint8_t *ctx, size_t ctxlen,
+                                const uint8_t *pk, mld_hash_alg_t hashAlg)
+{
+  /* formatted message: 0x01 || ctxlen (1 byte) || ctx || oid || ph */
+  uint8_t fmsg[2 + 255 + 11 + 64];
+  size_t oid_ph_len;
+
+  if (ctxlen > 255)
+  {
+    return -1;
+  }
+
+  fmsg[0] = 1;
+  fmsg[1] = ctxlen;
+  if (ctx != NULL && ctxlen != 0)
+  {
+    mld_memcpy(fmsg + 2, ctx, ctxlen);
+  }
+
+  /* Compute OID and pre-hash: writes oid || ph */
+  if (prehash_message(fmsg + 2 + ctxlen, &oid_ph_len, m, mlen, hashAlg))
+  {
+    return -1;
+  }
+
+  return crypto_sign_verify_internal(sig, siglen, fmsg, 2 + ctxlen + oid_ph_len,
+                                     NULL, 0, pk, 0);
+}
