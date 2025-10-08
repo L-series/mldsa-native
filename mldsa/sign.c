@@ -877,15 +877,24 @@ badsig:
  *              - mld_hash_alg_t hashAlg: hash algorithm enumeration
  *
  * Returns 0 if hash algorithm is supported and -1 otherwise.
- * Currently only SHAKE-256 is supported.
+ * Currently SHAKE-128 and SHAKE-256 are supported.
  **************************************************/
 static int prehash_message(uint8_t *out, size_t *oid_ph_len, const uint8_t *m,
                            size_t mlen, mld_hash_alg_t hashAlg)
 {
-  /* OIDs for supported hash functions - currently only SHAKE-256 is implemented
-   */
+  /* OIDs for supported hash functions */
+  const uint8_t shake_128_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                     0x65, 0x03, 0x04, 0x02, 0x0B};
   const uint8_t shake_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
                                      0x65, 0x03, 0x04, 0x02, 0x0C};
+  const uint8_t sha3_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x08};
+  const uint8_t sha3_224_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x07};
+  const uint8_t sha3_384_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x09};
+  const uint8_t sha3_512_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                    0x65, 0x03, 0x04, 0x02, 0x0A};
 
   /* OIDs for hash functions to be added:
   const uint8_t sha2_224_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
@@ -900,23 +909,43 @@ static int prehash_message(uint8_t *out, size_t *oid_ph_len, const uint8_t *m,
                                         0x65, 0x03, 0x04, 0x02, 0x05};
   const uint8_t sha2_512_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
                                         0x65, 0x03, 0x04, 0x02, 0x06};
-  const uint8_t sha3_224_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
-                                    0x65, 0x03, 0x04, 0x02, 0x07};
-  const uint8_t sha3_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
-                                    0x65, 0x03, 0x04, 0x02, 0x08};
-  const uint8_t sha3_384_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
-                                    0x65, 0x03, 0x04, 0x02, 0x09};
-  const uint8_t sha3_512_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
-                                    0x65, 0x03, 0x04, 0x02, 0x0A};
-  const uint8_t shake_128_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
-                                     0x65, 0x03, 0x04, 0x02, 0x0B};
   */
 
   switch (hashAlg)
   {
+    case MLD_SHAKE_128:
+      mld_memcpy(out, shake_128_oid, 11);
+      mld_shake128(out + 11, 32, m, mlen);
+      *oid_ph_len = 11 + 32;
+      return 0;
+
     case MLD_SHAKE_256:
       mld_memcpy(out, shake_256_oid, 11);
       mld_shake256(out + 11, 64, m, mlen);
+      *oid_ph_len = 11 + 64;
+      return 0;
+
+    case MLD_SHA3_256:
+      mld_memcpy(out, sha3_256_oid, 11);
+      mld_sha3_256(out + 11, m, mlen);
+      *oid_ph_len = 11 + 32;
+      return 0;
+
+    case MLD_SHA3_224:
+      mld_memcpy(out, sha3_224_oid, 11);
+      mld_sha3_224(out + 11, m, mlen);
+      *oid_ph_len = 11 + 28;
+      return 0;
+
+    case MLD_SHA3_384:
+      mld_memcpy(out, sha3_384_oid, 11);
+      mld_sha3_384(out + 11, m, mlen);
+      *oid_ph_len = 11 + 48;
+      return 0;
+
+    case MLD_SHA3_512:
+      mld_memcpy(out, sha3_512_oid, 11);
+      mld_sha3_512(out + 11, m, mlen);
       *oid_ph_len = 11 + 64;
       return 0;
 
@@ -927,11 +956,6 @@ static int prehash_message(uint8_t *out, size_t *oid_ph_len, const uint8_t *m,
     case MLD_SHA2_512:
     case MLD_SHA2_512_224:
     case MLD_SHA2_512_256:
-    case MLD_SHA3_224:
-    case MLD_SHA3_256:
-    case MLD_SHA3_384:
-    case MLD_SHA3_512:
-    case MLD_SHAKE_128:
     default:
       return -1;
   }

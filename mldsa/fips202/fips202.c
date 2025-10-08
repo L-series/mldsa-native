@@ -145,6 +145,9 @@ static unsigned int keccak_squeeze(uint8_t *out, size_t outlen,
 __contract__(
   requires((r == SHAKE128_RATE && pos <= SHAKE128_RATE) ||
            (r == SHAKE256_RATE && pos <= SHAKE256_RATE) ||
+           (r == SHA3_224_RATE && pos <= SHA3_224_RATE) ||
+           (r == SHA3_256_RATE && pos <= SHA3_256_RATE) ||
+           (r == SHA3_384_RATE && pos <= SHA3_384_RATE) ||
            (r == SHA3_512_RATE && pos <= SHA3_512_RATE))
   requires(outlen <= 8 * r /* somewhat arbitrary bound */)
   requires(memory_no_alias(s, sizeof(uint64_t) * MLD_KECCAK_LANES))
@@ -245,6 +248,17 @@ void mld_shake256_release(mld_shake256ctx *state)
   mld_zeroize(state, sizeof(mld_shake256ctx));
 }
 
+void mld_shake128(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen)
+{
+  mld_shake128ctx state;
+
+  mld_shake128_init(&state);
+  mld_shake128_absorb(&state, in, inlen);
+  mld_shake128_finalize(&state);
+  mld_shake128_squeeze(out, outlen, &state);
+  mld_shake128_release(&state);
+}
+
 void mld_shake256(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen)
 {
   mld_shake256ctx state;
@@ -254,4 +268,48 @@ void mld_shake256(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen)
   mld_shake256_finalize(&state);
   mld_shake256_squeeze(out, outlen, &state);
   mld_shake256_release(&state);
+}
+
+void mld_sha3_256(uint8_t *out, const uint8_t *in, size_t inlen)
+{
+  uint64_t s[MLD_KECCAK_LANES];
+
+  keccak_init(s);
+  keccak_absorb(s, 0, SHA3_256_RATE, in, inlen);
+  keccak_finalize(s, inlen % SHA3_256_RATE, SHA3_256_RATE, 0x06);
+  keccak_squeeze(out, SHA3_256_HASHBYTES, s, SHA3_256_RATE, SHA3_256_RATE);
+  mld_zeroize(s, sizeof(s));
+}
+
+void mld_sha3_384(uint8_t *out, const uint8_t *in, size_t inlen)
+{
+  uint64_t s[MLD_KECCAK_LANES];
+
+  keccak_init(s);
+  keccak_absorb(s, 0, SHA3_384_RATE, in, inlen);
+  keccak_finalize(s, inlen % SHA3_384_RATE, SHA3_384_RATE, 0x06);
+  keccak_squeeze(out, SHA3_384_HASHBYTES, s, SHA3_384_RATE, SHA3_384_RATE);
+  mld_zeroize(s, sizeof(s));
+}
+
+void mld_sha3_224(uint8_t *out, const uint8_t *in, size_t inlen)
+{
+  uint64_t s[MLD_KECCAK_LANES];
+
+  keccak_init(s);
+  keccak_absorb(s, 0, SHA3_224_RATE, in, inlen);
+  keccak_finalize(s, inlen % SHA3_224_RATE, SHA3_224_RATE, 0x06);
+  keccak_squeeze(out, SHA3_224_HASHBYTES, s, SHA3_224_RATE, SHA3_224_RATE);
+  mld_zeroize(s, sizeof(s));
+}
+
+void mld_sha3_512(uint8_t *out, const uint8_t *in, size_t inlen)
+{
+  uint64_t s[MLD_KECCAK_LANES];
+
+  keccak_init(s);
+  keccak_absorb(s, 0, SHA3_512_RATE, in, inlen);
+  keccak_finalize(s, inlen % SHA3_512_RATE, SHA3_512_RATE, 0x06);
+  keccak_squeeze(out, SHA3_512_HASHBYTES, s, SHA3_512_RATE, SHA3_512_RATE);
+  mld_zeroize(s, sizeof(s));
 }

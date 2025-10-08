@@ -129,7 +129,6 @@ def run_keyGen_test(tg, tc):
     info("OK")
 
 
-
 def run_sigGen_test(tg, tc):
     info(f"Running sigGen test case {tc['tcId']} ... ", end="")
     acvp_bin = get_acvp_binary(tg)
@@ -141,8 +140,15 @@ def run_sigGen_test(tg, tc):
         tc["rnd"] = "0" * 64
 
     if tg["preHash"] == "preHash":
-        # Skip non-SHAKE256 hash functions for now
-        if tc["hashAlg"] != "SHAKE-256":
+        # Only SHAKE-128, SHAKE-256, SHA3-224, SHA3-256, SHA3-384, and SHA3-512 are currently supported
+        if tc["hashAlg"] not in [
+            "SHAKE-128",
+            "SHAKE-256",
+            "SHA3-224",
+            "SHA3-256",
+            "SHA3-384",
+            "SHA3-512",
+        ]:
             info(f"SKIP ({tc['hashAlg']})")
             return
 
@@ -211,8 +217,15 @@ def run_sigVer_test(tg, tc):
     acvp_bin = get_acvp_binary(tg)
 
     if tg["preHash"] == "preHash":
-        # Skip non-SHAKE256 hash functions for now
-        if tc["hashAlg"] != "SHAKE-256":
+        # Only SHAKE-128, SHAKE-256, SHA3-224, SHA3-256, SHA3-384, and SHA3-512 are currently supported
+        if tc["hashAlg"] not in [
+            "SHAKE-128",
+            "SHAKE-256",
+            "SHA3-224",
+            "SHA3-256",
+            "SHA3-384",
+            "SHA3-512",
+        ]:
             info(f"SKIP ({tc['hashAlg']})")
             return
 

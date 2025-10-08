@@ -11,10 +11,14 @@
 
 #define SHAKE128_RATE 168
 #define SHAKE256_RATE 136
+#define SHA3_224_RATE 144
 #define SHA3_256_RATE 136
+#define SHA3_384_RATE 104
 #define SHA3_512_RATE 72
 #define MLD_KECCAK_LANES 25
+#define SHA3_224_HASHBYTES 28
 #define SHA3_256_HASHBYTES 32
+#define SHA3_384_HASHBYTES 48
 #define SHA3_512_HASHBYTES 64
 
 #define FIPS202_NAMESPACE(s) mldsa_fips202_ref_##s
@@ -119,6 +123,26 @@ void mld_shake128_release(mld_shake128ctx *state)
 __contract__(
   requires(memory_no_alias(state, sizeof(mld_shake128ctx)))
   assigns(memory_slice(state, sizeof(mld_shake128ctx)))
+);
+
+#define mld_shake128 FIPS202_NAMESPACE(shake128)
+/*************************************************
+ * Name:        mld_shake128
+ *
+ * Description: SHAKE128 XOF with non-incremental API
+ *
+ * Arguments:   - uint8_t *out: pointer to output
+ *              - size_t outlen: requested output length in bytes
+ *              - const uint8_t *in: pointer to input
+ *              - size_t inlen: length of input in bytes
+ **************************************************/
+void mld_shake128(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen)
+__contract__(
+  requires(inlen <= MLD_MAX_BUFFER_SIZE)
+  requires(outlen <= 8 * SHAKE128_RATE /* somewhat arbitrary bound */)
+  requires(memory_no_alias(in, inlen))
+  requires(memory_no_alias(out, outlen))
+  assigns(memory_slice(out, outlen))
 );
 
 #define mld_shake256_init FIPS202_NAMESPACE(shake256_init)
@@ -229,6 +253,78 @@ __contract__(
   requires(memory_no_alias(in, inlen))
   requires(memory_no_alias(out, outlen))
   assigns(memory_slice(out, outlen))
+);
+
+#define mld_sha3_256 FIPS202_NAMESPACE(sha3_256)
+/*************************************************
+ * Name:        mld_sha3_256
+ *
+ * Description: SHA3-256 hash function
+ *
+ * Arguments:   - uint8_t *out: pointer to output (32 bytes)
+ *              - const uint8_t *in: pointer to input
+ *              - size_t inlen: length of input in bytes
+ **************************************************/
+void mld_sha3_256(uint8_t *out, const uint8_t *in, size_t inlen)
+__contract__(
+  requires(inlen <= MLD_MAX_BUFFER_SIZE)
+  requires(memory_no_alias(in, inlen))
+  requires(memory_no_alias(out, SHA3_256_HASHBYTES))
+  assigns(memory_slice(out, SHA3_256_HASHBYTES))
+);
+
+#define mld_sha3_384 FIPS202_NAMESPACE(sha3_384)
+/*************************************************
+ * Name:        mld_sha3_384
+ *
+ * Description: SHA3-384 hash function
+ *
+ * Arguments:   - uint8_t *out: pointer to output (48 bytes)
+ *              - const uint8_t *in: pointer to input
+ *              - size_t inlen: length of input in bytes
+ **************************************************/
+void mld_sha3_384(uint8_t *out, const uint8_t *in, size_t inlen)
+__contract__(
+  requires(inlen <= MLD_MAX_BUFFER_SIZE)
+  requires(memory_no_alias(in, inlen))
+  requires(memory_no_alias(out, SHA3_384_HASHBYTES))
+  assigns(memory_slice(out, SHA3_384_HASHBYTES))
+);
+
+#define mld_sha3_224 FIPS202_NAMESPACE(sha3_224)
+/*************************************************
+ * Name:        mld_sha3_224
+ *
+ * Description: SHA3-224 hash function
+ *
+ * Arguments:   - uint8_t *out: pointer to output (28 bytes)
+ *              - const uint8_t *in: pointer to input
+ *              - size_t inlen: length of input in bytes
+ **************************************************/
+void mld_sha3_224(uint8_t *out, const uint8_t *in, size_t inlen)
+__contract__(
+  requires(inlen <= MLD_MAX_BUFFER_SIZE)
+  requires(memory_no_alias(in, inlen))
+  requires(memory_no_alias(out, SHA3_224_HASHBYTES))
+  assigns(memory_slice(out, SHA3_224_HASHBYTES))
+);
+
+#define mld_sha3_512 FIPS202_NAMESPACE(sha3_512)
+/*************************************************
+ * Name:        mld_sha3_512
+ *
+ * Description: SHA3-512 hash function
+ *
+ * Arguments:   - uint8_t *out: pointer to output (64 bytes)
+ *              - const uint8_t *in: pointer to input
+ *              - size_t inlen: length of input in bytes
+ **************************************************/
+void mld_sha3_512(uint8_t *out, const uint8_t *in, size_t inlen)
+__contract__(
+  requires(inlen <= MLD_MAX_BUFFER_SIZE)
+  requires(memory_no_alias(in, inlen))
+  requires(memory_no_alias(out, SHA3_512_HASHBYTES))
+  assigns(memory_slice(out, SHA3_512_HASHBYTES))
 );
 
 #endif /* !MLD_FIPS202_FIPS202_H */
