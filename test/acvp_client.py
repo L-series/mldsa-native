@@ -140,18 +140,6 @@ def run_sigGen_test(tg, tc):
         tc["rnd"] = "0" * 64
 
     if tg["preHash"] == "preHash":
-        # Only SHAKE-128, SHAKE-256, SHA3-224, SHA3-256, SHA3-384, and SHA3-512 are currently supported
-        if tc["hashAlg"] not in [
-            "SHAKE-128",
-            "SHAKE-256",
-            "SHA3-224",
-            "SHA3-256",
-            "SHA3-384",
-            "SHA3-512",
-        ]:
-            info(f"SKIP ({tc['hashAlg']})")
-            return
-
         assert len(tc["context"]) <= 2 * 255
 
         acvp_call = exec_prefix + [
@@ -217,18 +205,6 @@ def run_sigVer_test(tg, tc):
     acvp_bin = get_acvp_binary(tg)
 
     if tg["preHash"] == "preHash":
-        # Only SHAKE-128, SHAKE-256, SHA3-224, SHA3-256, SHA3-384, and SHA3-512 are currently supported
-        if tc["hashAlg"] not in [
-            "SHAKE-128",
-            "SHAKE-256",
-            "SHA3-224",
-            "SHA3-256",
-            "SHA3-384",
-            "SHA3-512",
-        ]:
-            info(f"SKIP ({tc['hashAlg']})")
-            return
-
         assert len(tc["context"]) <= 2 * 255
 
         acvp_call = exec_prefix + [

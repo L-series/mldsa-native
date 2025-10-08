@@ -32,6 +32,7 @@
 #include "poly.h"
 #include "polyvec.h"
 #include "randombytes.h"
+#include "sha2/sha2.h"
 #include "sign.h"
 #include "symmetric.h"
 
@@ -895,8 +896,6 @@ static int prehash_message(uint8_t *out, size_t *oid_ph_len, const uint8_t *m,
                                     0x65, 0x03, 0x04, 0x02, 0x09};
   const uint8_t sha3_512_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
                                     0x65, 0x03, 0x04, 0x02, 0x0A};
-
-  /* OIDs for hash functions to be added:
   const uint8_t sha2_224_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
                                     0x65, 0x03, 0x04, 0x02, 0x04};
   const uint8_t sha2_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
@@ -909,7 +908,6 @@ static int prehash_message(uint8_t *out, size_t *oid_ph_len, const uint8_t *m,
                                         0x65, 0x03, 0x04, 0x02, 0x05};
   const uint8_t sha2_512_256_oid[11] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
                                         0x65, 0x03, 0x04, 0x02, 0x06};
-  */
 
   switch (hashAlg)
   {
@@ -949,13 +947,42 @@ static int prehash_message(uint8_t *out, size_t *oid_ph_len, const uint8_t *m,
       *oid_ph_len = 11 + 64;
       return 0;
 
-    /* Other hash algorithms not yet supported */
     case MLD_SHA2_224:
+      mld_memcpy(out, sha2_224_oid, 11);
+      mld_sha2_224(out + 11, m, mlen);
+      *oid_ph_len = 11 + 28;
+      return 0;
+
     case MLD_SHA2_256:
+      mld_memcpy(out, sha2_256_oid, 11);
+      mld_sha2_256(out + 11, m, mlen);
+      *oid_ph_len = 11 + 32;
+      return 0;
+
     case MLD_SHA2_384:
+      mld_memcpy(out, sha2_384_oid, 11);
+      mld_sha2_384(out + 11, m, mlen);
+      *oid_ph_len = 11 + 48;
+      return 0;
+
     case MLD_SHA2_512:
+      mld_memcpy(out, sha2_512_oid, 11);
+      mld_sha2_512(out + 11, m, mlen);
+      *oid_ph_len = 11 + 64;
+      return 0;
+
     case MLD_SHA2_512_224:
+      mld_memcpy(out, sha2_512_224_oid, 11);
+      mld_sha2_512_224(out + 11, m, mlen);
+      *oid_ph_len = 11 + 28;
+      return 0;
+
     case MLD_SHA2_512_256:
+      mld_memcpy(out, sha2_512_256_oid, 11);
+      mld_sha2_512_256(out + 11, m, mlen);
+      *oid_ph_len = 11 + 32;
+      return 0;
+
     default:
       return -1;
   }

@@ -5,7 +5,8 @@
 CFLAGS = /nologo /O2 /Imldsa /Imlmdsa/fips202 /Imldsa/fips202/native /Imldsa/native
 
 OBJ_FILES = .\mldsa\*.obj \
-            .\mldsa\fips202\*.obj
+            .\mldsa\fips202\*.obj \
+            .\mldsa\sha2\*.obj
 
 BUILD_DIR = test\build
 MLDSA44_BUILD_DIR = $(BUILD_DIR)\mldsa44
@@ -13,11 +14,14 @@ MLDSA65_BUILD_DIR = $(BUILD_DIR)\mldsa65
 MLDSA87_BUILD_DIR = $(BUILD_DIR)\mldsa87
 
 OBJ_FILES_44 = $(MLDSA44_BUILD_DIR)\mldsa\*.obj \
-                $(MLDSA44_BUILD_DIR)\mldsa\fips202\*.obj
+                $(MLDSA44_BUILD_DIR)\mldsa\fips202\*.obj \
+                $(MLDSA44_BUILD_DIR)\mldsa\sha2\*.obj
 OBJ_FILES_65 = $(MLDSA65_BUILD_DIR)\mldsa\*.obj \
-                $(MLDSA65_BUILD_DIR)\mldsa\fips202\*.obj
+                $(MLDSA65_BUILD_DIR)\mldsa\fips202\*.obj \
+                $(MLDSA65_BUILD_DIR)\mldsa\sha2\*.obj
 OBJ_FILES_87 = $(MLDSA87_BUILD_DIR)\mldsa\*.obj \
-                 $(MLDSA87_BUILD_DIR)\mldsa\fips202\*.obj
+                 $(MLDSA87_BUILD_DIR)\mldsa\fips202\*.obj \
+                 $(MLDSA87_BUILD_DIR)\mldsa\sha2\*.obj
 
 # NOTE: We currently only build code for non-opt code, as we haven't yet made the assembly compatible on Windows
 !IFNDEF OPT
@@ -37,6 +41,10 @@ OPT = 0
     @if NOT EXIST $(MLDSA44_BUILD_DIR)\mldsa\fips202 mkdir $(MLDSA44_BUILD_DIR)\mldsa\fips202
     $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=44 /c /Fo$(MLDSA44_BUILD_DIR)\mldsa\fips202\ $<
 
+{mldsa\sha2}.c{$(MLDSA44_BUILD_DIR)\mldsa\sha2}.obj::
+    @if NOT EXIST $(MLDSA44_BUILD_DIR)\mldsa\sha2 mkdir $(MLDSA44_BUILD_DIR)\mldsa\sha2
+    $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=44 /c /Fo$(MLDSA44_BUILD_DIR)\mldsa\sha2\ $<
+
 {test}.c{$(MLDSA44_BUILD_DIR)\test}.obj::
     @if NOT EXIST $(MLDSA44_BUILD_DIR)\test mkdir $(MLDSA44_BUILD_DIR)\test
     $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=44 /c /Fo$(MLDSA44_BUILD_DIR)\test\ $<
@@ -50,6 +58,10 @@ OPT = 0
     @if NOT EXIST $(MLDSA65_BUILD_DIR)\mldsa\fips202 mkdir $(MLDSA65_BUILD_DIR)\mldsa\fips202
     $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=65 /c /Fo$(MLDSA65_BUILD_DIR)\mldsa\fips202\ $<
 
+{mldsa\sha2}.c{$(MLDSA65_BUILD_DIR)\mldsa\sha2}.obj::
+    @if NOT EXIST $(MLDSA65_BUILD_DIR)\mldsa\sha2 mkdir $(MLDSA65_BUILD_DIR)\mldsa\sha2
+    $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=65 /c /Fo$(MLDSA65_BUILD_DIR)\mldsa\sha2\ $<
+
 {test}.c{$(MLDSA65_BUILD_DIR)\test}.obj::
     @if NOT EXIST $(MLDSA65_BUILD_DIR)\test mkdir $(MLDSA65_BUILD_DIR)\test
     $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=65 /c /Fo$(MLDSA65_BUILD_DIR)\test\ $<
@@ -62,6 +74,10 @@ OPT = 0
 {mldsa\fips202}.c{$(MLDSA87_BUILD_DIR)\mldsa\fips202}.obj::
     @if NOT EXIST $(MLDSA87_BUILD_DIR)\mldsa\fips202 mkdir $(MLDSA87_BUILD_DIR)\mldsa\fips202
     $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=87 /c /Fo$(MLDSA87_BUILD_DIR)\mldsa\fips202\ $<
+
+{mldsa\sha2}.c{$(MLDSA87_BUILD_DIR)\mldsa\sha2}.obj::
+    @if NOT EXIST $(MLDSA87_BUILD_DIR)\mldsa\sha2 mkdir $(MLDSA87_BUILD_DIR)\mldsa\sha2
+    $(CC) $(CFLAGS) /D MLD_CONFIG_PARAMETER_SET=87 /c /Fo$(MLDSA87_BUILD_DIR)\mldsa\sha2\ $<
 
 {test}.c{$(MLDSA87_BUILD_DIR)\test}.obj::
     @if NOT EXIST $(MLDSA87_BUILD_DIR)\test mkdir $(MLDSA87_BUILD_DIR)\test
