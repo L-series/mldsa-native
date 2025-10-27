@@ -61,6 +61,7 @@ _looptop1:
         vpsrlq  ymm11, ymm10, 32
         vpsrlq  ymm13, ymm12, 32
         vmovshdup ymm15, ymm14
+        /* All: abs bound < 9q */
 
 // Multiply
         vpmuldq ymm2, ymm2, ymm10
@@ -69,6 +70,7 @@ _looptop1:
         vpmuldq ymm5, ymm5, ymm13
         vpmuldq ymm6, ymm6, ymm14
         vpmuldq ymm7, ymm7, ymm15
+        /* All: abs bound < 81q^2 < 81*2^46 < 2^53 = 2^21R < qR/2 */
 
 // Reduce
         vpmuldq ymm10, ymm0, ymm2
@@ -92,6 +94,11 @@ _looptop1:
         vpsrlq  ymm2, ymm2, 32
         vpsrlq  ymm4, ymm4, 32
         vmovshdup ymm6, ymm6
+        /*
+         * All coefficients are Montgomery-reduced. This results in the bound
+         *
+         * All: abs bound <= "input abs bound"/R + q/2 < (qR/2)/R + q/2 = q
+         */
 
 // Store
         vpblendd ymm2, ymm2, ymm3, 0xAA

@@ -37,12 +37,17 @@
         vpsrlq  ymm9, ymm8, 32
         vmovshdup ymm11, ymm10
         vmovshdup ymm13, ymm12
+        /*
+         * 6, 7, 8, 9: from the first input polynomial, abs bound < q
+         * 10, 11, 12, 13: from the second input polynomial, abs bound < 9q
+         */
 
 // Multiply
         vpmuldq ymm6, ymm6, ymm10
         vpmuldq ymm7, ymm7, ymm11
         vpmuldq ymm8, ymm8, ymm12
         vpmuldq ymm9, ymm9, ymm13
+        /* All: abs bound < 9q^2 */
 .endm
 
 .macro acc
@@ -80,15 +85,19 @@ _looptop2:
         vmovdqa ymm3, ymm7
         vmovdqa ymm4, ymm8
         vmovdqa ymm5, ymm9
+        /* All: abs bound < 9q^2 */
 
         pointwise 1024
         acc
+        /* All: abs bound < 18q^2 */
 
         pointwise 2048
         acc
+        /* All: abs bound < 27q^2 */
 
         pointwise 3072
         acc
+        /* All: abs bound < 36q^2 < 36*2^46 < 2^52 = 2^20R < qR/2 */
 
 // Reduce
         vpmuldq ymm6, ymm0, ymm2
@@ -105,6 +114,11 @@ _looptop2:
         vpsubq  ymm5, ymm5, ymm9
         vpsrlq  ymm2, ymm2, 32
         vmovshdup ymm4, ymm4
+        /*
+         * All coefficients are Montgomery-reduced. This results in the bound
+         *
+         * All: abs bound <= "input abs bound"/R + q/2 < (qR/2)/R + q/2 = q
+         */
 
 // Store
         vpblendd ymm2, ymm2, ymm3, 0xAA
