@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762162314276,
+  "lastUpdate": 1762162369081,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -242300,6 +242300,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 324383,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "cfb8e96846cdd6f09d82cf578ba7e358deecfa28",
+          "message": "Adjust LICENSE after AArch64 iNTT/NTT reimplementation\n\nhttps://github.com/pq-code-package/mldsa-native/pull/570 reimplemented\nthe iNTT/NTT to achieve uniform Apache-2.0 OR ISC OR MIT licensing.\nThis commit updates the LICENSE to remove the outdated license for the\nold NTT and INTT - these were the last files covered by that license.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2025-11-03T17:30:53+08:00",
+          "tree_id": "c4717042fddee576a6041ef4cfc1342b131fbdb8",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/cfb8e96846cdd6f09d82cf578ba7e358deecfa28"
+        },
+        "date": 1762162300799,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 114986,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 377336,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 120173,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 199197,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 622914,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 198229,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 325580,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 789931,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 324389,
             "unit": "cycles"
           }
         ]
