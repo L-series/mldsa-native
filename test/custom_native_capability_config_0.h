@@ -17,6 +17,22 @@
  *   https://csrc.nist.gov/pubs/fips/204/final
  */
 
+/*
+ * WARNING: This file is auto-generated from scripts/autogen
+ *          in the mldsa-native repository.
+ *          Do not modify it directly.
+ */
+
+/*
+ * Test configuration: Test configuration with custom capability function
+ * returning 0
+ *
+ * This configuration differs from the default mldsa/src/config.h in the
+ * following places:
+ *   - MLD_CONFIG_CUSTOM_CAPABILITY_FUNC
+ */
+
+
 #ifndef MLD_CONFIG_H
 #define MLD_CONFIG_H
 
@@ -321,12 +337,18 @@
  *              will be run on, you must use this option.
  *
  *****************************************************************************/
-/* #define MLD_CONFIG_CUSTOM_CAPABILITY_FUNC
-   static MLD_INLINE int mld_sys_check_capability(mld_sys_cap cap)
-   {
-       ... your implementation ...
-   }
-*/
+#define MLD_CONFIG_CUSTOM_CAPABILITY_FUNC
+#if !defined(__ASSEMBLER__)
+#include "../mldsa/src/sys.h"
+/* System capability enumeration */
+
+static MLD_INLINE int mld_sys_check_capability(mld_sys_cap cap)
+{
+  (void)cap; /* Ignore parameter */
+  return 0;
+}
+#endif /* !__ASSEMBLER__ */
+
 
 /******************************************************************************
  * Name:        MLD_CONFIG_KEYGEN_PCT

@@ -22,6 +22,14 @@
 #include "../cbmc.h"
 #include "../common.h"
 
+/* Backends must return MLD_NATIVE_FUNC_SUCCESS upon success. */
+#define MLD_NATIVE_FUNC_SUCCESS (0)
+/* Backends may return MLD_NATIVE_FUNC_FALLBACK to signal to the frontend that
+ * the target/parameters are unsupported; typically, this would be because of
+ * dependencies on CPU features not detected on the host CPU. In this case,
+ * the frontend falls back to the default C implementation. */
+#define MLD_NATIVE_FUNC_FALLBACK (-1)
+
 /*
  * This is the C<->native interface allowing for the drop-in of
  * native code for performance critical arithmetic components of ML-DSA.
@@ -52,7 +60,7 @@
  *
  * Arguments:   - int32_t p[MLDSA_N]: pointer to in/output polynomial
  **************************************************/
-static MLD_INLINE void mld_ntt_native(int32_t p[MLDSA_N]);
+static MLD_INLINE int mld_ntt_native(int32_t p[MLDSA_N]);
 #endif /* MLD_USE_NATIVE_NTT */
 
 

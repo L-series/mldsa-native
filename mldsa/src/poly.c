@@ -142,23 +142,24 @@ void mld_poly_shiftl(mld_poly *a)
   mld_assert_bound(a->coeffs, MLDSA_N, 0, MLDSA_Q);
 }
 
-#if !defined(MLD_USE_NATIVE_NTT)
 MLD_INTERNAL_API
 void mld_poly_ntt(mld_poly *a)
 {
   mld_assert_abs_bound(a->coeffs, MLDSA_N, MLDSA_Q);
+#if defined(MLD_USE_NATIVE_NTT)
+  {
+    int ret;
+    ret = mld_ntt_native(a->coeffs);
+    if (ret == MLD_NATIVE_FUNC_SUCCESS)
+    {
+      mld_assert_abs_bound(a->coeffs, MLDSA_N, MLD_NTT_BOUND);
+      return;
+    }
+  }
+#endif /* MLD_USE_NATIVE_NTT */
   mld_ntt(a->coeffs);
   mld_assert_abs_bound(a->coeffs, MLDSA_N, MLD_NTT_BOUND);
 }
-#else  /* !MLD_USE_NATIVE_NTT */
-MLD_INTERNAL_API
-void mld_poly_ntt(mld_poly *p)
-{
-  mld_assert_abs_bound(p->coeffs, MLDSA_N, MLDSA_Q);
-  mld_ntt_native(p->coeffs);
-  mld_assert_abs_bound(p->coeffs, MLDSA_N, MLD_NTT_BOUND);
-}
-#endif /* MLD_USE_NATIVE_NTT */
 
 #if !defined(MLD_USE_NATIVE_INTT)
 MLD_INTERNAL_API

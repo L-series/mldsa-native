@@ -17,6 +17,22 @@
  *   https://csrc.nist.gov/pubs/fips/204/final
  */
 
+/*
+ * WARNING: This file is auto-generated from scripts/autogen
+ *          in the mldsa-native repository.
+ *          Do not modify it directly.
+ */
+
+/*
+ * Test configuration: Test configuration with CPUID-based AVX2 capability
+ * detection
+ *
+ * This configuration differs from the default mldsa/src/config.h in the
+ * following places:
+ *   - MLD_CONFIG_CUSTOM_CAPABILITY_FUNC
+ */
+
+
 #ifndef MLD_CONFIG_H
 #define MLD_CONFIG_H
 
@@ -321,12 +337,49 @@
  *              will be run on, you must use this option.
  *
  *****************************************************************************/
-/* #define MLD_CONFIG_CUSTOM_CAPABILITY_FUNC
-   static MLD_INLINE int mld_sys_check_capability(mld_sys_cap cap)
-   {
-       ... your implementation ...
-   }
-*/
+#define MLD_CONFIG_CUSTOM_CAPABILITY_FUNC
+#if !defined(__ASSEMBLER__)
+#include <stdint.h>
+#include "../mldsa/src/sys.h"
+
+/* Assert this config is only used on Linux/x86_64 systems */
+#if !defined(MLD_SYS_X86_64) || !defined(MLD_SYS_LINUX)
+#error "This configuration is only supported on Linux/x86_64 systems"
+#endif
+
+static MLD_INLINE int mld_sys_check_capability(mld_sys_cap cap)
+{
+  if (cap == MLD_SYS_CAP_AVX2)
+  {
+    uint32_t eax, ebx, ecx, edx;
+
+    /* AVX2 support is queried using `cpuid` with EAX=7, ECX=0.
+     * Check first if `cpuid` supports EAX=7 by calling it with
+     * EAX=0, which gives the maximum supported value of EAX in
+     * EAX. */
+
+    __asm__ volatile("cpuid"
+                     : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+                     : "a"(0));
+
+    if (eax < 7)
+    {
+      return 0; /* Extended features not supported */
+    }
+
+    __asm__ volatile("cpuid"
+                     : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+                     : "a"(7), "c"(0));
+
+    /* AVX2 is bit 5 in EBX */
+    return (ebx & (1 << 5)) ? 1 : 0;
+  }
+
+  /* Default to 0 (conservative) for unknown capabilities */
+  return 0;
+}
+#endif /* !__ASSEMBLER__ */
+
 
 /******************************************************************************
  * Name:        MLD_CONFIG_KEYGEN_PCT
