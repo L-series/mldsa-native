@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762229166464,
+  "lastUpdate": 1762229169377,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -115247,6 +115247,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 461578,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jammy.chiou1@gmail.com",
+            "name": "jammychiou1",
+            "username": "jammychiou1"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "c82bb2a6799623b40165e7ee2b433c5a45d4f2e8",
+          "message": "Update documentation comments for public API functions\n\nUpdate \"Arguments\" section to reflect the switch to array notation for\nkeys/seeds and other fixed-length buffers.\n\nWhile we're at it, we also sync the docs between sign.h and\nmldsa_native.h and adjust comment indentation/alignment. Other than\nthat, the comments are mostly unchanged.\n\nSigned-off-by: jammychiou1 <jammy.chiou1@gmail.com>",
+          "timestamp": "2025-11-04T12:02:14+08:00",
+          "tree_id": "f8e015a28de43c8f2eaf14cd2bded295217b0a58",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/c82bb2a6799623b40165e7ee2b433c5a45d4f2e8"
+        },
+        "date": 1762229166767,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 157756,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 564894,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 169870,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 271893,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 931066,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 277132,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 452007,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1182761,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 460353,
             "unit": "cycles"
           }
         ]
