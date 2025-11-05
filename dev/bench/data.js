@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762316232650,
+  "lastUpdate": 1762316292342,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -241194,6 +241194,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 818154,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "6a4e9c39e8fb7d0ae4f9099488c1b9c5567bb55e",
+          "message": "HashML-DSA: Replace enum by define to pick pre-hash function\n\nCurrently we have an enum for the 12 different pre-hash functions for\nHashML-DSA. This leads to problems in multi-level builds as we must only\ndefine the enum once. Currently we work around this by guarding the enum\ndefinition with a pre-processor conditional.\nHowever, there is also a (theoretical) concern about the type of the enum\nbeing implementation-defined in C90:\nhttps://github.com/pq-code-package/mldsa-native/pull/537#discussion_r2484226645\n\nIt seems cleaner to not use an enum here, but instead use #defines avoiding all\nthe above problems.\nThis commit implements that change.\n\nWe also eliminate the camel case hashAlg - that was inconsistent with the\nremaining code base from the start.\n\nResolves\nhttps://github.com/pq-code-package/mldsa-native/issues/591\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2025-11-05T04:12:46Z",
+          "tree_id": "d1cb455a509d53ba8cda46474f21d8b2b11404d8",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/6a4e9c39e8fb7d0ae4f9099488c1b9c5567bb55e"
+        },
+        "date": 1762316218124,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 287237,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 932709,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 291225,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 485998,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1514482,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 476871,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 832632,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 2050722,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 814770,
             "unit": "cycles"
           }
         ]
