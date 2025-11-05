@@ -48,8 +48,9 @@ vpblendd	$0xAA,%ymm\r1,%ymm\r0,%ymm\r3
  * Compute l + montmul(h, zh), l - montmul(h, zh) then store the results back to
  * l, h respectively.
  *
- * Although the general abs bound of Montgomery multiplication is 3q/4, we use
- * the more convenient bound q here.
+ * Although the abs bound of "Montgomery multiplication with signed canonical
+ * constant" is ceil(3q/4) (see the end of dev/x86_64/src/intt.S), we use the
+ * more convenient bound q here.
  *
  * In conclusion, the magnitudes of all coefficients grow by at most q after
  * each layer.

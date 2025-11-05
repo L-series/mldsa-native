@@ -15,6 +15,11 @@
  *   CRYSTALS-Dilithium optimized AVX2 implementation
  *   Bai, Ducas, Kiltz, Lepoint, Lyubashevsky, Schwabe, Seiler, Stehlé
  *   https://github.com/pq-crystals/dilithium/tree/master/avx2
+ *
+ * - [Survey_Hwang23]
+ *   A Survey of Polynomial Multiplications for Lattice-Based Cryptosystems
+ *   Vincent Hwang
+ *   https://eprint.iacr.org/2023/1962
  */
 
 #include "../../../common.h"
@@ -47,7 +52,8 @@ vpblendd	$0xAA,%ymm\r1,%ymm\r0,%ymm\r3
  * Compute l + h, montmul(h - l, zh) then store the results back to l, h
  * respectively.
  *
- * The general abs bound of Montgomery multiplication is 3q/4.
+ * The abs bound of "Montgomery multiplication with signed canonical constant"
+ * is ceil(3q/4) (see the end of this file).
  */
 .macro butterfly l,h,zl0=1,zl1=1,zh0=2,zh1=2
 vpsubd		%ymm\l,%ymm\h,%ymm12
@@ -107,7 +113,7 @@ vmovshdup	%ymm3,%ymm1
 vmovshdup	%ymm15,%ymm2
 butterfly	10,11,1,3,2,15
 
-/* 4, 6, 8, 10: abs bound < 2q; 5, 7, 9, 11: abs bound < 3q/4 */
+/* 4, 6, 8, 10: abs bound < 2q; 5, 7, 9, 11: abs bound < ceil(3q/4) */
 /*
  * Note that since 2^31 / q > 256, the sum of all 256 coefficients does not
  * overflow. This allows us to greatly simplify the range analysis by relaxing
@@ -236,7 +242,7 @@ butterfly	5,9
 butterfly	6,10
 butterfly	7,11
 
-/* 4, 5, 6, 7: abs bound < 256q; 8, 9, 10, 11: abs bound < 3q/4 */
+/* 4, 5, 6, 7: abs bound < 256q; 8, 9, 10, 11: abs bound < ceil(3q/4) */
 
 vmovdqa         %ymm8,512+32*\off(%rdi)
 vmovdqa         %ymm9,640+32*\off(%rdi)
@@ -251,8 +257,7 @@ vmovdqa         %ymm11,896+32*\off(%rdi)
  * For ymm{8,9,10,11}, the scaling has been merged into the last butterfly, so
  * only ymm{4,5,6,7} need to be scaled explicitly.
  *
- * The scaling is achieved by computing montmul(-, MLD_AVX2_DIV), so the output
- * will have an abs bound of 3q/4.
+ * The scaling is achieved by computing montmul(-, MLD_AVX2_DIV).
  *
  * 4, 5, 6, 7: abs bound < 256q
  */
@@ -305,7 +310,22 @@ vmovshdup	%ymm7,%ymm7
 vpblendd	$0xAA,%ymm8,%ymm6,%ymm6
 vpblendd	$0xAA,%ymm9,%ymm7,%ymm7
 
-/* 4, 5, 6, 7: abs bound < 3q/4 */
+/*
+ * The bound ceil(3q/4) for this scaling, as well as any other "Montgomery
+ * multiplication with signed canonical constant", is justified as follows.
+ *
+ * In @[Survey_Hwang23, Section 2.2] they showed a bound that works for any
+ * variable input a, as long as the constant b is signed canonical:
+ *
+ *   |montmul(a, b)| <= (|a| (q/2) + (R/2) q) / R = (q/2) (1 + |a|/R).
+ *
+ * Therefore, even if we know nothing about a except that it fits inside
+ * int32_t (thus |a| <= R/2), we still have |montmul(a, b)| <= 3q/4. This can be
+ * strengthened to |montmul_pos(a, b)| <= floor(3q/4) < ceil(3q/4) since LHS is
+ * an integer and 3q/4 isn't.
+ */
+
+/* 4, 5, 6, 7: abs bound < ceil(3q/4) */
 
 vmovdqa         %ymm4,  0+32*\off(%rdi)
 vmovdqa         %ymm5,128+32*\off(%rdi)

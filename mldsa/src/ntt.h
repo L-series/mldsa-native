@@ -21,8 +21,8 @@
 
 /* Absolute exclusive upper bound for the output of the forward NTT */
 #define MLD_NTT_BOUND (9 * MLDSA_Q)
-/* Absolute exclusive upper bound for the output of the inverse NTT*/
-#define MLD_INTT_BOUND (MLDSA_Q * 3 / 4)
+/* Absolute exclusive upper bound for the output of the inverse NTT */
+#define MLD_INTT_BOUND (MLDSA_Q * 3 / 4 + 1) /* ceil(3 * MLDSA_Q / 4) */
 
 #define mld_ntt MLD_NAMESPACE(ntt)
 /*************************************************

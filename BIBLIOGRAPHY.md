@@ -247,6 +247,15 @@ source code and documentation.
   - [mldsa/src/native/aarch64/src/intt.S](mldsa/src/native/aarch64/src/intt.S)
   - [mldsa/src/native/aarch64/src/ntt.S](mldsa/src/native/aarch64/src/ntt.S)
 
+### `Survey_Hwang23`
+
+* A Survey of Polynomial Multiplications for Lattice-Based Cryptosystems
+* Author(s):
+  - Vincent Hwang
+* URL: https://eprint.iacr.org/2023/1962
+* Referenced from:
+  - [dev/x86_64/src/intt.S](dev/x86_64/src/intt.S)
+
 ### `libmceliece`
 
 * libmceliece implementation of Classic McEliece

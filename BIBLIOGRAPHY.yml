@@ -103,6 +103,14 @@
   - Kannwischer, Matthias J.
   - Yang, Bo-Yin
   - Yang, Shang-Yi
+
+- id: Survey_Hwang23
+  name: "A Survey of Polynomial Multiplications for Lattice-Based Cryptosystems"
+  year: 2023
+  url: https://eprint.iacr.org/2023/1962
+  author:
+  - Hwang, Vincent
+
 - id: mupq
   name: Common files for pqm4, pqm3, pqriscv
   author: 
