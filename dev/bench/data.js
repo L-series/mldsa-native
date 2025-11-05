@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762328585944,
+  "lastUpdate": 1762328591598,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -85019,6 +85019,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 152044,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "f7fccd93ad5cf88ad735df4c422fceb5c4e47cf7",
+          "message": "autogen/simpasm: Add support for Intel syntax\n\n- This commit is ported from mlkem-native PR 1275\n- This commit extends scripts/simpasm to support the emission of x86_64\n  assembly in Intel syntax via `--x86-64-syntax intel`, also the CI is\n  extended to exercise this on an x86_64 runner and run the full tests\n  afterwards.\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2025-11-05T15:39:41+08:00",
+          "tree_id": "f384b08af8f14f8dc7b5836cd54d9ae555546b40",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/f7fccd93ad5cf88ad735df4c422fceb5c4e47cf7"
+        },
+        "date": 1762328543679,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 56664,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 180626,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 61207,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 99313,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 296519,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 100165,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 153618,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 352593,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 152439,
             "unit": "cycles"
           }
         ]
