@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762303715127,
+  "lastUpdate": 1762304946609,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -260518,6 +260518,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 130335,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "8306454dba79563b8d6568ac76b9a91c4e79c680",
+          "message": "Align native api.h with meta.h\n\nThis commit fixes two issues:\n  - correcting the parameter type for `mld_intt_native`\n  - making array dimensions concrete in the polyvecl pointwise\n    accumulation functions rather than using MLDSA_L\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2025-11-05T09:08:26+08:00",
+          "tree_id": "65f9a660e1895237e1e24ffd04c0cfa725fde83e",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/8306454dba79563b8d6568ac76b9a91c4e79c680"
+        },
+        "date": 1762304934509,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 46224,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 132739,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 47860,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 81140,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 219219,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 80139,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 132346,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 280950,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 130330,
             "unit": "cycles"
           }
         ]
