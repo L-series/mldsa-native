@@ -590,7 +590,6 @@ int crypto_sign_signature(uint8_t sig[CRYPTO_BYTES], size_t *siglen,
                           size_t ctxlen,
                           const uint8_t sk[CRYPTO_SECRETKEYBYTES])
 {
-  size_t i;
   uint8_t pre[257];
   uint8_t rnd[MLDSA_RNDBYTES];
   int result;
@@ -607,14 +606,9 @@ int crypto_sign_signature(uint8_t sig[CRYPTO_BYTES], size_t *siglen,
   pre[0] = 0;
   /* Safety: Truncation is safe due to the check above. */
   pre[1] = (uint8_t)ctxlen;
-  for (i = 0; i < ctxlen; i++)
-  __loop__(
-    assigns(i, object_whole(pre))
-    invariant(i <= ctxlen)
-    invariant(ctxlen <= 255)
-  )
+  if (ctxlen > 0)
   {
-    pre[2 + i] = ctx[i];
+    mld_memcpy(pre + 2, ctx, ctxlen);
   }
 
   /* Randomized variant of ML-DSA. If you need the deterministic variant,
@@ -794,7 +788,6 @@ int crypto_sign_verify(const uint8_t *sig, size_t siglen, const uint8_t *m,
                        size_t mlen, const uint8_t *ctx, size_t ctxlen,
                        const uint8_t pk[CRYPTO_PUBLICKEYBYTES])
 {
-  size_t i;
   uint8_t pre[257];
   int result;
 
@@ -806,12 +799,9 @@ int crypto_sign_verify(const uint8_t *sig, size_t siglen, const uint8_t *m,
   pre[0] = 0;
   /* Safety: Truncation is safe due to the check above. */
   pre[1] = (uint8_t)ctxlen;
-  for (i = 0; i < ctxlen; i++)
-  __loop__(
-    invariant(i <= ctxlen)
-  )
+  if (ctxlen > 0)
   {
-    pre[2 + i] = ctx[i];
+    mld_memcpy(pre + 2, ctx, ctxlen);
   }
 
   result =
@@ -869,14 +859,7 @@ int crypto_sign_open(uint8_t *m, size_t *mlen, const uint8_t *sm, size_t smlen,
 badsig:
   /* Signature verification failed */
   *mlen = 0;
-  for (i = 0; i < smlen; ++i)
-  __loop__(
-    assigns(i, memory_slice(m, smlen))
-    invariant(i <= smlen)
-  )
-  {
-    m[i] = 0;
-  }
+  mld_memset(m, 0, smlen);
 
   return -1;
 }

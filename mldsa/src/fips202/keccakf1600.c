@@ -39,15 +39,14 @@
 void mld_keccakf1600_extract_bytes(uint64_t *state, unsigned char *data,
                                    unsigned offset, unsigned length)
 {
-  unsigned i;
 #if defined(MLD_SYS_LITTLE_ENDIAN)
   uint8_t *state_ptr = (uint8_t *)state + offset;
-  for (i = 0; i < length; i++)
-  __loop__(invariant(i <= length))
+  if (length > 0)
   {
-    data[i] = state_ptr[i];
+    mld_memcpy(data, state_ptr, length);
   }
 #else  /* MLD_SYS_LITTLE_ENDIAN */
+  unsigned i;
   /* Portable version */
   for (i = 0; i < length; i++)
   __loop__(invariant(i <= length))
