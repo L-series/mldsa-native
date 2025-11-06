@@ -15,11 +15,6 @@
  *   CRYSTALS-Dilithium optimized AVX2 implementation
  *   Bai, Ducas, Kiltz, Lepoint, Lyubashevsky, Schwabe, Seiler, Stehlé
  *   https://github.com/pq-crystals/dilithium/tree/master/avx2
- *
- * - [Survey_Hwang23]
- *   A Survey of Polynomial Multiplications for Lattice-Based Cryptosystems
- *   Vincent Hwang
- *   https://eprint.iacr.org/2023/1962
  */
 
 #include "../../../common.h"
@@ -314,8 +309,9 @@ vpblendd	$0xAA,%ymm9,%ymm7,%ymm7
  * The bound ceil(3q/4) for this scaling, as well as any other "Montgomery
  * multiplication with signed canonical constant", is justified as follows.
  *
- * In @[Survey_Hwang23, Section 2.2] they showed a bound that works for any
- * variable input a, as long as the constant b is signed canonical:
+ * In Section 2.2 of https://eprint.iacr.org/2023/1962, they showed a bound that
+ * works for any variable input a, as long as the constant b is signed
+ * canonical:
  *
  *   |montmul(a, b)| <= (|a| (q/2) + (R/2) q) / R = (q/2) (1 + |a|/R).
  *
@@ -323,6 +319,10 @@ vpblendd	$0xAA,%ymm9,%ymm7,%ymm7
  * int32_t (thus |a| <= R/2), we still have |montmul(a, b)| <= 3q/4. This can be
  * strengthened to |montmul_pos(a, b)| <= floor(3q/4) < ceil(3q/4) since LHS is
  * an integer and 3q/4 isn't.
+ *
+ * TODO: Use proper citation. Currently, citations within asm can cause linter
+ *       to complain about unused citation, because comments are not preserved
+ *       after simpasm.
  */
 
 /* 4, 5, 6, 7: abs bound < ceil(3q/4) */

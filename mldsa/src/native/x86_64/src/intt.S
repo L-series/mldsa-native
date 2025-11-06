@@ -15,11 +15,6 @@
  *   CRYSTALS-Dilithium optimized AVX2 implementation
  *   Bai, Ducas, Kiltz, Lepoint, Lyubashevsky, Schwabe, Seiler, Stehlé
  *   https://github.com/pq-crystals/dilithium/tree/master/avx2
- *
- * - [Survey_Hwang23]
- *   A Survey of Polynomial Multiplications for Lattice-Based Cryptosystems
- *   Vincent Hwang
- *   https://eprint.iacr.org/2023/1962
  */
 
 #include "../../../common.h"
