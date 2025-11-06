@@ -38,7 +38,10 @@
 
 static MLD_INLINE void mld_poly_permute_bitrev_to_custom(int32_t data[MLDSA_N])
 {
-  mld_nttunpack_avx2((__m256i *)(data));
+  if (mld_sys_check_capability(MLD_SYS_CAP_AVX2))
+  {
+    mld_nttunpack_avx2((__m256i *)(data));
+  }
 }
 
 static MLD_INLINE int mld_ntt_native(int32_t data[MLDSA_N])
@@ -51,9 +54,14 @@ static MLD_INLINE int mld_ntt_native(int32_t data[MLDSA_N])
   mld_ntt_avx2((__m256i *)data, mld_qdata.vec);
   return MLD_NATIVE_FUNC_SUCCESS;
 }
-static MLD_INLINE void mld_intt_native(int32_t data[MLDSA_N])
+static MLD_INLINE int mld_intt_native(int32_t data[MLDSA_N])
 {
+  if (!mld_sys_check_capability(MLD_SYS_CAP_AVX2))
+  {
+    return MLD_NATIVE_FUNC_FALLBACK;
+  }
   mld_invntt_avx2((__m256i *)data, mld_qdata.vec);
+  return MLD_NATIVE_FUNC_SUCCESS;
 }
 
 static MLD_INLINE int mld_rej_uniform_native(int32_t *r, unsigned len,

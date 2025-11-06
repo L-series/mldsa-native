@@ -42,10 +42,11 @@ static MLD_INLINE int mld_ntt_native(int32_t data[MLDSA_N])
   return MLD_NATIVE_FUNC_SUCCESS;
 }
 
-static MLD_INLINE void mld_intt_native(int32_t data[MLDSA_N])
+static MLD_INLINE int mld_intt_native(int32_t data[MLDSA_N])
 {
   mld_intt_asm(data, mld_aarch64_intt_zetas_layer78,
                mld_aarch64_intt_zetas_layer123456);
+  return MLD_NATIVE_FUNC_SUCCESS;
 }
 
 static MLD_INLINE int mld_rej_uniform_native(int32_t *r, unsigned len,
